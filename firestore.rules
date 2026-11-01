@@ -1,0 +1,146 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function mine() { return signedIn() && resource.data.userId == request.auth.uid; }
+    function tour(id) { return get(/databases/$(database)/documents/tournaments/$(id)).data; }
+    function tourAfter(id) { return getAfter(/databases/$(database)/documents/tournaments/$(id)).data; }
+    function me() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
+    function okUrl(s) { return s is string && s.matches('^https://.{3,290}$'); }
+
+    // Profile: created once by the owner together with a unique username reservation.
+    match /users/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['fullName','username','usernameLower','role','vip','stats','language','createdAt'])
+        && request.resource.data.fullName is string && request.resource.data.fullName.size() >= 2 && request.resource.data.fullName.size() <= 60
+        && request.resource.data.username.matches('^[A-Za-z0-9_]{3,20}$')
+        && request.resource.data.usernameLower == request.resource.data.username.lower()
+        && request.resource.data.role == 'player' && request.resource.data.vip == false
+        && request.resource.data.stats == {'matches':0,'wins':0,'kills':0,'points':0}
+        && request.resource.data.createdAt == request.time
+        && getAfter(/databases/$(database)/documents/usernames/$(request.resource.data.usernameLower)).data.uid == uid;
+      allow update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['ign','ffUid','language','notificationPrefs','privacy','fcmTokens'])
+        && (!('ffUid' in request.resource.data) || (request.resource.data.ffUid is string && request.resource.data.ffUid.matches('^[0-9]{6,15}$')))
+        && (!('ign' in request.resource.data) || (request.resource.data.ign is string && request.resource.data.ign.size() <= 30));
+      allow delete: if false;
+    }
+    match /usernames/{n} {
+      allow read: if false;
+      allow create: if signedIn() && n.matches('^[a-z0-9_]{3,20}$')
+        && request.resource.data.keys().hasOnly(['uid']) && request.resource.data.uid == request.auth.uid
+        && getAfter(/databases/$(database)/documents/users/$(request.auth.uid)).data.usernameLower == n;
+      allow update, delete: if false;
+    }
+
+    // Tournaments are created/edited by the organizer in the Firebase Console (console access bypasses rules).
+    // A player may only add 1 to joinedCount, in the same batch that creates their own registration.
+    match /tournaments/{tid} {
+      allow read: if signedIn();
+      allow create, delete: if false;
+      allow update: if signedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['joinedCount'])
+        && request.resource.data.joinedCount == resource.data.joinedCount + 1
+        && request.resource.data.joinedCount <= resource.data.totalSlots
+        && !exists(/databases/$(database)/documents/registrations/$(tid + '_' + request.auth.uid))
+        && existsAfter(/databases/$(database)/documents/registrations/$(tid + '_' + request.auth.uid));
+      match /participants/{p} {
+        allow read: if signedIn();
+        allow create: if signedIn() && p == request.auth.uid
+          && request.resource.data.keys().hasOnly(['uid','username','ffUid'])
+          && request.resource.data.uid == p
+          && request.resource.data.username == me().username
+          && request.resource.data.ffUid == me().ffUid
+          && existsAfter(/databases/$(database)/documents/registrations/$(tid + '_' + request.auth.uid));
+        allow update, delete: if false;
+      }
+    }
+
+    // Free-entry registration. Document id = tournamentId_uid, so one player cannot join twice.
+    match /registrations/{rid} {
+      allow read: if mine();
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['userId','tournamentId','status','createdAt'])
+        && request.resource.data.keys().hasAll(['userId','tournamentId','status','createdAt'])
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.status == 'registered'
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.tournamentId is string
+        && rid == request.resource.data.tournamentId + '_' + request.auth.uid
+        && tour(request.resource.data.tournamentId).status == 'open'
+        && tour(request.resource.data.tournamentId).get('entryFeePoisha', 0) == 0
+        && tour(request.resource.data.tournamentId).get('teamSize', 1) == 1
+        && tour(request.resource.data.tournamentId).joinedCount < tour(request.resource.data.tournamentId).totalSlots
+        && tour(request.resource.data.tournamentId).get('registerUntil', request.time) >= request.time
+        && me().get('ffUid', '').matches('^[0-9]{6,15}$')
+        && tourAfter(request.resource.data.tournamentId).joinedCount == tour(request.resource.data.tournamentId).joinedCount + 1;
+      allow update, delete: if false;
+    }
+
+    // Room credentials: organizer writes in Console. Only registered players can read, only after releaseAt.
+    match /matchRooms/{tid} {
+      allow get: if signedIn()
+        && exists(/databases/$(database)/documents/registrations/$(tid + '_' + request.auth.uid))
+        && resource.data.releaseAt <= request.time
+        && !(tour(tid).status in ['cancelled','completed']);
+      allow list, write: if false;
+    }
+
+    // Results go to review as 'pending'. Only the organizer (Console) can approve or publish.
+    match /resultSubmissions/{rid} {
+      allow read: if mine();
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['userId','tournamentId','kills','placement','evidenceUrl','status','createdAt'])
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.tournamentId is string
+        && rid == request.resource.data.tournamentId + '_' + request.auth.uid
+        && request.resource.data.status == 'pending' && request.resource.data.createdAt == request.time
+        && request.resource.data.kills is int && request.resource.data.kills >= 0 && request.resource.data.kills <= 99
+        && request.resource.data.placement is int && request.resource.data.placement >= 1 && request.resource.data.placement <= 60
+        && okUrl(request.resource.data.evidenceUrl)
+        && exists(/databases/$(database)/documents/registrations/$(rid))
+        && tour(request.resource.data.tournamentId).status in ['live','completed'];
+      allow update, delete: if false;
+    }
+
+    match /supportTickets/{id} {
+      allow read: if mine();
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['userId','type','subject','message','transactionId','evidenceUrl','status','createdAt'])
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.type in ['Tournament complaint','Account issue','Payment issue']
+        && request.resource.data.subject is string && request.resource.data.subject.size() > 0 && request.resource.data.subject.size() <= 80
+        && request.resource.data.message is string && request.resource.data.message.size() > 0 && request.resource.data.message.size() <= 1000
+        && (request.resource.data.type != 'Payment issue' || request.resource.data.get('transactionId', '').size() > 0)
+        && (!('evidenceUrl' in request.resource.data) || okUrl(request.resource.data.evidenceUrl))
+        && request.resource.data.status == 'open' && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
+    match /playerReports/{id} {
+      allow read: if mine();
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['userId','type','target','details','evidenceUrl','status','createdAt'])
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.type in ['cheating','suspicious','wrong_result']
+        && request.resource.data.details is string && request.resource.data.details.size() > 0 && request.resource.data.details.size() <= 1000
+        && (!('target' in request.resource.data) || request.resource.data.target.size() <= 40)
+        && (!('evidenceUrl' in request.resource.data) || okUrl(request.resource.data.evidenceUrl))
+        && request.resource.data.status == 'open' && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
+
+    // Read-only for players; the organizer edits these in the Console.
+    match /leaderboards/{id} { allow read: if signedIn(); allow write: if false; }
+    match /winnerHistory/{id} { allow read: if signedIn(); allow write: if false; }
+    match /announcements/{id} { allow read: if signedIn(); allow write: if false; }
+    match /liveStreams/{id} { allow read: if signedIn(); allow write: if false; }
+    match /appSettings/{id} { allow read: if signedIn() && id == 'public'; allow write: if false; }
+    match /notifications/{id} {
+      allow read, delete: if mine();
+      allow update: if mine() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']);
+      allow create: if false;
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}
