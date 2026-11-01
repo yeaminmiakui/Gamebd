@@ -1,14 +1,4022 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>TCE FF</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Hind+Siliguri:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Developer Iasan</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-material-ui/material-ui.min.css" rel="stylesheet">
+
+<style>
+    :root {
+        --primary: #3F51B5;
+        --primary-light: #E8EAF6;
+        --secondary: #ff9800;
+        --success: #43A047;
+        --danger: #D32F2F;
+        --bg-color: #f0f2f5;
+        --text-dark: #1d1b20;
+        --white: #ffffff;
+        --wallet-gradient: linear-gradient(135deg, #0d0d2b, #1a1a4e, #0d0d2b);
+        --bkash-color: #E2136E;
+        --rocket-color: #8C3494;
+        --nagad-color: #F7941D;
+        --bkash-dark: #b00e56;
+        --rocket-dark: #6a2670;
+        --nagad-dark: #c97612;
+        --auth-bg-dark: #0a0a1a;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Lato', 'Hind Siliguri', sans-serif;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+        user-select: none;
+    }
+
+    input, textarea, select {
+        user-select: text;
+    }
+
+    body {
+        background-color: var(--bg-color);
+        padding-bottom: 90px;
+        overflow-x: hidden;
+        min-height: 100vh;
+    }
+
+    /* SPLASH SCREEN */
+    #app-splash {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 50%, #0a0a1a 100%);
+        z-index: 10000;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        transition: opacity 0.5s ease-out;
+        overflow: hidden;
+    }
+
+    .splash-logo-box {
+        width: 130px;
+        height: 130px;
+        background: linear-gradient(135deg, #4a3f8a, #2a1a5a);
+        border-radius: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 15px;
+        margin-bottom: 25px;
+        border: 2px solid rgba(255,215,0,0.2);
+        box-shadow: 0 0 60px rgba(108,99,255,0.2);
+        position: relative;
+    }
+
+    .splash-logo-box::before {
+        content: '';
+        position: absolute;
+        inset: -3px;
+        border-radius: 32px;
+        padding: 2px;
+        background: linear-gradient(135deg, #ffd700, #ff6b00, #ffd700);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0.5;
+    }
+
+    .splash-logo-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 20px;
+    }
+
+    .splash-app-name {
+        font-size: 28px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        margin-bottom: 5px;
+        text-align: center;
+        background: linear-gradient(135deg, #ffd700, #ff8c00);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        z-index: 2;
+    }
+
+    .splash-version {
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 80px;
+        z-index: 2;
+        background: rgba(255,255,255,0.05);
+        padding: 4px 16px;
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .splash-bottom-area {
+        position: absolute;
+        bottom: 60px;
+        width: 100%;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        z-index: 2;
+    }
+
+    .splash-welcome {
+        font-size: 13px;
+        font-weight: 300;
+        letter-spacing: 2px;
+        margin-bottom: 12px;
+        opacity: 0.6;
+        color: #aaa;
+    }
+
+    .splash-line {
+        width: 120px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #ffd700, transparent);
+        border-radius: 2px;
+        margin-bottom: 18px;
+        animation: lineExpand 2s ease-in-out infinite alternate;
+    }
+
+    .splash-dots-container {
+        display: flex;
+        gap: 8px;
+    }
+
+    .splash-dot {
+        width: 10px;
+        height: 10px;
+        background: #333;
+        border-radius: 50%;
+        animation: dotBounce 1.4s infinite ease-in-out both;
+    }
+
+    .splash-dot:nth-child(1) { animation-delay: -0.32s; }
+    .splash-dot:nth-child(2) { animation-delay: -0.16s; }
+    .splash-dot:nth-child(3) { animation-delay: 0s; }
+
+    .particle {
+        position: absolute;
+        width: 3px;
+        height: 3px;
+        background: rgba(255, 215, 0, 0.3);
+        border-radius: 50%;
+        animation: floatUp linear infinite;
+        bottom: -10px;
+        z-index: 1;
+    }
+
+    @keyframes floatUp {
+        0% { transform: translateY(0) scale(1); opacity: 0; }
+        20% { opacity: 0.8; }
+        100% { transform: translateY(-100vh) scale(0.3); opacity: 0; }
+    }
+
+    @keyframes lineExpand {
+        0% { width: 60px; opacity: 0.3; }
+        100% { width: 160px; opacity: 1; }
+    }
+
+    @keyframes dotBounce {
+        0%, 80%, 100% { transform: scale(0.4); opacity: 0.3; }
+        40% { transform: scale(1); opacity: 1; background: #ffd700; }
+    }
+
+    /* GLOBAL LOADER */
+    #global-loader {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.6);
+        z-index: 9999;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(4px);
+    }
+    
+    #global-loader.active {
+        display: flex;
+    }
+
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid rgba(255, 255, 255, 0.1);
+        border-top: 4px solid #ffd700;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* AUTH VIEW */
+    #auth-view {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background-color: var(--auth-bg-dark);
+        z-index: 5000;
+        display: none;
+        flex-direction: column;
+        overflow-y: auto;
+    }
+    #auth-view.active { display: flex; }
+
+    .auth-top-section {
+        height: 35vh;
+        width: 100%;
+        background: linear-gradient(180deg, #0a0a1a, #1a1a3e);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .auth-title-large {
+        font-size: 28px;
+        font-weight: 800;
+        margin-bottom: 5px;
+        background: linear-gradient(135deg, #ffd700, #ff8c00);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .auth-subtitle {
+        font-size: 14px;
+        color: #aaa;
+        font-weight: 400;
+    }
+
+    .auth-bottom-card {
+        background-color: white;
+        min-height: 65vh;
+        width: 100%;
+        border-top-left-radius: 30px;
+        border-top-right-radius: 30px;
+        padding: 30px 25px;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    .auth-card-title {
+        font-size: 24px;
+        font-weight: 800;
+        text-align: center;
+        color: #444;
+        margin-bottom: 25px;
+    }
+
+    .auth-input-group {
+        margin-bottom: 15px;
+        position: relative;
+    }
+
+    .auth-input-field {
+        width: 100%;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+        outline: none;
+        color: #333;
+    }
+    
+    .auth-input-field:focus {
+        border-color: #333;
+    }
+
+    .auth-password-eye {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #777;
+        cursor: pointer;
+    }
+
+    .auth-checkbox-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 10px 0 20px;
+        font-size: 12px;
+        color: #555;
+    }
+
+    .auth-checkbox-row input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+    }
+
+    .auth-black-btn {
+        width: 100%;
+        background: linear-gradient(135deg, #1a1a2e, #2a1a4e);
+        color: white;
+        padding: 16px;
+        border-radius: 30px;
+        border: none;
+        font-size: 16px;
+        font-weight: 800;
+        text-transform: uppercase;
+        cursor: pointer;
+        box-shadow: 0 4px 20px rgba(26,26,46,0.3);
+        margin-bottom: 15px;
+        transition: 0.3s;
+    }
+
+    .auth-black-btn:active {
+        transform: scale(0.96);
+    }
+
+    .auth-footer-link {
+        text-align: center;
+        font-size: 13px;
+        color: #888;
+        margin-top: 10px;
+    }
+
+    .auth-footer-link span {
+        color: #0091EA;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .auth-forget-link {
+        text-align: right;
+        font-size: 12px;
+        color: #444;
+        font-weight: 600;
+        margin-top: -10px;
+        margin-bottom: 20px;
+        cursor: pointer;
+    }
+
+    /* APP SECTIONS */
+    .app-section {
+        display: none;
+        background: var(--bg-color);
+        min-height: 100vh;
+    }
+    
+    .app-section.active {
+        display: block;
+    }
+
+    .sub-page .app-section {
+        padding-top: 0;
+    }
+
+    /* BACK NAV */
+    .back-nav {
+        padding: 15px;
+        color: #000;
+        font-weight: 800;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: white;
+        border-bottom: 1px solid #eee;
+        font-size: 16px;
+        width: 100%;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .back-nav.dark-mode {
+        background: #000000;
+        color: white;
+        border-bottom: 1px solid #333;
+    }
+
+    /* SHOP - TOP-UP */
+    #tab-shop-view {
+        background: white;
+        padding: 20px;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+    }
+    #tab-shop-view.active {
+        display: flex;
+    }
+
+    .shop-title {
+        font-size: 24px;
+        font-weight: 900;
+        color: #333;
+        margin-bottom: 20px;
+        text-align: center;
+        width: 100%;
+    }
+
+    .shop-balance-card {
+        background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+        border-radius: 16px;
+        padding: 20px;
+        width: 100%;
+        max-width: 400px;
+        margin-bottom: 20px;
+        color: white;
+        text-align: center;
+        border: 1px solid rgba(255,215,0,0.1);
+    }
+
+    .shop-balance-label {
+        font-size: 14px;
+        opacity: 0.8;
+    }
+
+    .shop-balance-amount {
+        font-size: 32px;
+        font-weight: 800;
+        margin-top: 5px;
+        color: #ffd700;
+    }
+
+    .shop-balance-label-small {
+        font-size: 12px;
+        opacity: 0.6;
+        margin-top: 5px;
+    }
+
+    .shop-package-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .shop-package-card {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 16px;
+        text-align: center;
+        border: 1px solid #eee;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+
+    .shop-package-card:active {
+        transform: scale(0.96);
+    }
+
+    .shop-package-icon {
+        font-size: 30px;
+        color: #4FC3F7;
+        margin-bottom: 8px;
+    }
+
+    .shop-package-name {
+        font-weight: 800;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .shop-package-price {
+        font-weight: 700;
+        font-size: 16px;
+        color: var(--primary);
+        margin-top: 4px;
+    }
+
+    .shop-package-btn {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: 0.2s;
+    }
+
+    .shop-package-btn:active {
+        transform: scale(0.92);
+    }
+
+    .shop-package-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+    }
+
+    /* HOME */
+    .home-content-wrapper { padding: 15px; }
+
+    .hero-banner {
+        border-radius: 0;
+        overflow: hidden;
+        background: #fff;
+        margin-bottom: 0;
+        position: relative;
+    }
+
+    .slider-container {
+        width: 100%;
+        padding-bottom: 56.25%;
+        position: relative;
+        overflow: hidden;
+        background: #1a1a2e;
+    }
+
+    .slider-wrapper {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        display: flex;
+        transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .slide {
+        min-width: 100%;
+        height: 100%;
+        flex-shrink: 0;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .slide img {
+        width: 100%; height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .slide-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 20px;
+        background: linear-gradient(transparent, rgba(0,0,0,0.6));
+        color: white;
+    }
+
+    .slide-overlay h3 {
+        font-size: 16px;
+        font-weight: 800;
+    }
+
+    .slide-overlay p {
+        font-size: 12px;
+        opacity: 0.8;
+    }
+
+    .slider-dots {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px 0;
+        background: #fff;
+        border-bottom: 1px solid #eee;
+        position: relative;
+        z-index: 10;
+    }
+
+    .slider-dots .dot {
+        width: 8px;
+        height: 8px;
+        background: #ddd;
+        border-radius: 50%;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+
+    .slider-dots .dot.active {
+        background: var(--secondary);
+        width: 24px;
+        border-radius: 4px;
+    }
+
+    /* MARQUEE - White Background, Black Text */
+    .marquee-container {
+        background: #ffffff;
+        padding: 12px 18px;
+        border-radius: 14px;
+        margin-bottom: 20px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        border: 1px solid #eee;
+        display: flex;
+        align-items: center;
+    }
+
+    .marquee-container .notice-label {
+        color: #333;
+        font-weight: 900;
+        font-size: 14px;
+        white-space: nowrap;
+        margin-right: 10px;
+        flex-shrink: 0;
+    }
+
+    #dynamic-notice {
+        color: #222;
+        font-weight: 600;
+        font-size: 14px;
+        display: inline-block;
+        padding-left: 100%;
+        animation: marqueeScroll 25s linear infinite;
+        white-space: nowrap;
+    }
+
+    @keyframes marqueeScroll {
+        0% { transform: translate(0, 0); }
+        100% { transform: translate(-100%, 0); }
+    }
+
+    .category-title {
+        font-weight: 900;
+        font-size: 18px;
+        margin: 15px 0 20px;
+        text-transform: uppercase;
+        text-align: center;
+        color: #333;
+        position: relative;
+    }
+
+    .category-title::after {
+        content: '';
+        display: block;
+        width: 50px;
+        height: 3px;
+        background: var(--secondary);
+        margin: 8px auto 0;
+        border-radius: 2px;
+    }
+
+    .category-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        padding: 0 5px;
+    }
+
+    .cat-card-new {
+        background: #EEEEEE;
+        border-radius: 10px;
+        overflow: hidden;
+        cursor: pointer;
+        border: 3px solid #546E7A;
+        display: flex;
+        flex-direction: column;
+        transition: all 0.3s;
+    }
+
+    .cat-card-new:active {
+        transform: scale(0.96);
+    }
+
+    .cat-card-img {
+        width: 100%;
+        height: 110px;
+        object-fit: cover;
+        background: white;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .cat-card-info {
+        padding: 10px;
+        background: #EEEEEE;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .cat-card-title {
+        font-weight: 900;
+        font-size: 15px;
+        color: #000;
+        margin-bottom: 2px;
+        text-transform: uppercase;
+        line-height: 1.2;
+    }
+
+    .cat-card-count {
+        font-size: 12px;
+        color: #777;
+        font-weight: 600;
+    }
+
+    /* PROFILE */
+    .profile-header-bg {
+        background: linear-gradient(135deg, var(--primary), #42a5f5);
+        padding: 40px 20px 30px;
+        text-align: center;
+        color: white;
+        margin-bottom: 20px;
+        border-radius: 0 0 20px 20px;
+    }
+
+    .profile-avatar-box img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid rgba(255,255,255,0.8);
+    }
+
+    .menu-list {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #eee;
+    }
+
+    .menu-item {
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        border-bottom: 1px solid #eee;
+        cursor: pointer;
+        color: #333;
+        font-weight: 600;
+    }
+
+    .menu-item:last-child {
+        border-bottom: none;
+    }
+
+    .menu-item img {
+        width: 20px;
+    }
+
+    .menu-item .menu-icon {
+        width: 24px;
+        text-align: center;
+        font-size: 18px;
+        color: var(--primary);
+    }
+
+    /* PROFILE RULES BUTTON */
+    .profile-rules-btn {
+        background: linear-gradient(135deg, #1a1040, #2a1a60);
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin: 15px 0 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        transition: 0.3s;
+        border: 1px solid rgba(255,215,0,0.1);
+    }
+
+    .profile-rules-btn:active {
+        transform: scale(0.97);
+    }
+
+    .profile-rules-btn .rules-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: white;
+    }
+
+    .profile-rules-btn .rules-left i {
+        font-size: 22px;
+        color: #ffd700;
+    }
+
+    .profile-rules-btn .rules-left span {
+        font-weight: 700;
+        font-size: 16px;
+    }
+
+    .profile-rules-btn .rules-left small {
+        font-size: 12px;
+        opacity: 0.6;
+        display: block;
+        font-weight: 400;
+    }
+
+    .profile-rules-btn i.fa-chevron-right {
+        color: #666;
+    }
+
+    /* RULES PAGE */
+    #rules-view {
+        background: #f5f6fa;
+        min-height: 100vh;
+    }
+
+    .rules-page-header {
+        background: linear-gradient(135deg, #1a1040, #2a1a60);
+        padding: 30px 20px 20px;
+        color: white;
+        border-radius: 0 0 20px 20px;
+    }
+
+    .rules-page-header h2 {
+        font-size: 22px;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .rules-page-header h2 i {
+        color: #ffd700;
+    }
+
+    .rules-page-header p {
+        font-size: 13px;
+        opacity: 0.7;
+        margin-top: 5px;
+    }
+
+    .rules-category-list {
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .rules-category-item {
+        background: white;
+        border-radius: 12px;
+        padding: 16px 18px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        cursor: pointer;
+        transition: 0.3s;
+        border: 1px solid #eee;
+    }
+
+    .rules-category-item:active {
+        transform: scale(0.97);
+    }
+
+    .rules-category-item .rc-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .rules-category-item .rc-header img {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+
+    .rules-category-item .rc-header .rc-name {
+        font-weight: 700;
+        font-size: 15px;
+        color: #333;
+        flex: 1;
+    }
+
+    .rules-category-item .rc-header .rc-arrow {
+        color: #ccc;
+        font-size: 14px;
+        transition: transform 0.3s;
+    }
+
+    .rules-category-item .rc-content {
+        display: none;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    .rules-category-item .rc-content.open {
+        display: block;
+    }
+
+    .rules-category-item .rc-content ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .rules-category-item .rc-content ul li {
+        padding: 6px 0 6px 20px;
+        position: relative;
+        color: #555;
+        font-size: 14px;
+        line-height: 1.6;
+        border-bottom: 1px solid #f5f5f5;
+    }
+
+    .rules-category-item .rc-content ul li::before {
+        content: '▸';
+        position: absolute;
+        left: 0;
+        color: var(--primary);
+        font-weight: 700;
+    }
+
+    .rules-category-item .rc-content ul li:last-child {
+        border-bottom: none;
+    }
+
+    /* MATCH TABS */
+    .match-tabs-container {
+        display: flex;
+        justify-content: space-between;
+        background: white;
+        padding: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        position: sticky;
+        top: 55px;
+        z-index: 90;
+    }
+
+    .m-tab {
+        flex: 1;
+        text-align: center;
+        padding: 10px 0;
+        font-weight: 600;
+        font-size: 13px;
+        color: #666;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        text-transform: uppercase;
+    }
+
+    .m-tab.active {
+        color: var(--primary);
+        font-weight: 900;
+        border-bottom: 3px solid var(--primary);
+    }
+
+    /* MATCH CARD */
+    .match-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        margin-bottom: 18px;
+        overflow: hidden;
+        border: 1px solid #eee;
+        transition: all 0.3s;
+    }
+
+    .match-card.play-card {
+        cursor: pointer;
+    }
+
+    .match-card.play-card:active {
+        transform: scale(0.98);
+    }
+
+    .match-card.result-card {
+        cursor: default;
+    }
+
+    .match-card.result-card:active {
+        transform: none;
+    }
+
+    .mc-header {
+        display: flex;
+        padding: 14px 16px;
+        gap: 14px;
+        align-items: flex-start;
+        background: #fafafa;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .mc-thumb {
+        width: 70px;
+        height: 50px;
+        border-radius: 8px;
+        object-fit: cover;
+        border: 1px solid #eee;
+        flex-shrink: 0;
+    }
+
+    .mc-header-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .mc-title-row {
+        font-size: 15px;
+        font-weight: 800;
+        color: #333;
+        margin-bottom: 3px;
+        line-height: 1.2;
+    }
+
+    .mc-date-row {
+        font-size: 11px;
+        color: #D32F2F;
+        font-weight: 600;
+    }
+
+    .mc-badge-row {
+        display: flex;
+        gap: 6px;
+        margin-top: 4px;
+        flex-wrap: wrap;
+    }
+
+    .mc-badge {
+        font-size: 9px;
+        padding: 2px 10px;
+        border-radius: 20px;
+        font-weight: 700;
+        text-transform: uppercase;
+        background: #e8eaf6;
+        color: #3F51B5;
+    }
+
+    .mc-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        text-align: center;
+        padding: 10px 10px 12px 10px;
+        gap: 6px 0;
+        background: #fff;
+        border-bottom: 1px solid #f5f5f5;
+    }
+
+    .mc-stat-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 4px 0;
+    }
+
+    .mc-stat-label {
+        font-size: 8px;
+        color: #999;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .mc-stat-value {
+        font-size: 13px;
+        font-weight: 900;
+        color: #000;
+        margin-top: 1px;
+    }
+
+    .mc-join-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 16px 16px 16px;
+        gap: 12px;
+    }
+
+    .mc-progress-wrapper {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .mc-prog-bar {
+        height: 6px;
+        background: #E0E0E0;
+        border-radius: 3px;
+        overflow: hidden;
+        margin-bottom: 4px;
+    }
+    
+    .mc-prog-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #66BB6A, #43A047);
+        border-radius: 3px;
+        transition: width 0.5s ease;
+    }
+
+    .mc-spots-info {
+        display: flex;
+        justify-content: space-between;
+        font-size: 10px;
+        color: #666;
+        font-weight: 600;
+    }
+
+    .btn-join-main {
+        border: none;
+        background: linear-gradient(135deg, #3F51B5, #5C6BC0);
+        color: white;
+        padding: 8px 24px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: 0.2s;
+        box-shadow: 0 2px 8px rgba(63,81,181,0.2);
+    }
+    
+    .btn-join-main:active {
+        transform: scale(0.94);
+    }
+    
+    .btn-join-main.disabled {
+        background: #ccc;
+        color: #888;
+        box-shadow: none;
+        pointer-events: none;
+    }
+
+    .mc-details-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 16px 16px 16px;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .btn-details {
+        border: 1px solid #1565C0;
+        color: #1565C0;
+        background: white;
+        padding: 7px 10px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        cursor: pointer;
+        flex: 1;
+        justify-content: center;
+        transition: 0.2s;
+    }
+
+    .btn-details:active {
+        transform: scale(0.94);
+    }
+
+    .mc-footer-timer {
+        background: #388E3C;
+        color: white;
+        text-align: center;
+        padding: 10px;
+        font-size: 13px;
+        font-weight: 700;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* WALLET - White Theme */
+    .wallet-redesign-container { 
+        background: #f0f2f5; 
+        min-height: 100vh; 
+        color: #333; 
+        padding-bottom: 50px; 
+    }
+
+    .wallet-gradient-card { 
+        background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+        margin: 15px; 
+        border-radius: 20px; 
+        padding: 25px; 
+        position: relative; 
+        color: white; 
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2); 
+        border: 1px solid rgba(255,215,0,0.08);
+        overflow: hidden;
+    }
+
+    .wallet-gradient-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -30%;
+        width: 80%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,215,0,0.03) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .wg-header { 
+        display: flex; 
+        align-items: center; 
+        gap: 10px; 
+        font-weight: 800; 
+        font-size: 14px; 
+        margin-bottom: 25px; 
+        position: relative;
+        z-index: 1;
+    }
+
+    .wg-header i { color: #ffd700; font-size: 18px; }
+    .wg-wallet-text { color: #ffd700; margin-left: 5px; font-weight: 900; }
+    .wg-label { 
+        font-size: 12px; 
+        opacity: 0.7; 
+        font-weight: 400; 
+        color: #aaa; 
+        position: relative;
+        z-index: 1;
+    }
+    .wg-balance { 
+        font-size: 36px; 
+        font-weight: 800; 
+        margin-top: 5px; 
+        letter-spacing: 1px; 
+        display: flex; 
+        align-items: center; 
+        gap: 5px;
+        color: #ffd700;
+        position: relative;
+        z-index: 1;
+    }
+    .wg-footer { 
+        position: absolute; 
+        bottom: 15px; 
+        right: 20px; 
+        font-size: 10px; 
+        font-weight: 800; 
+        letter-spacing: 2px; 
+        opacity: 0.15;
+        text-transform: uppercase;
+    }
+
+    .wallet-stats-white-card { 
+        background: white; 
+        margin: 0 15px; 
+        border-radius: 16px; 
+        padding: 20px 10px; 
+        display: flex; 
+        justify-content: space-around; 
+        color: #333; 
+        box-shadow: 0 4px 15px rgba(0,0,0,0.06); 
+    }
+
+    .ws-item { text-align: center; flex: 1; }
+    .ws-item:first-child { border-right: 1px solid #eee; }
+    .ws-icon { font-size: 22px; margin-bottom: 6px; color: #333; }
+    .ws-label { font-size: 10px; font-weight: 800; color: #5a3be2; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px; }
+    .ws-amount { font-size: 20px; font-weight: 900; color: #333; }
+
+    .wallet-action-row { display: flex; gap: 15px; padding: 20px 15px; }
+    .wa-btn { flex: 1; padding: 15px; border-radius: 12px; border: none; color: white; font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.15); transition: 0.3s; }
+    .wa-btn:active { transform: scale(0.96); }
+    .wa-btn.add { background: linear-gradient(135deg, #5a4bda, #3f2b8a); }
+    .wa-btn.withdraw { background: linear-gradient(135deg, #00c853, #009624); }
+
+    .wallet-section-title { 
+        padding: 10px 20px 0; 
+        font-size: 16px; 
+        font-weight: 800; 
+        color: #333; 
+        margin-bottom: 12px; 
+        display: flex; 
+        align-items: center; 
+        gap: 8px; 
+    }
+
+    .quick-action-card { 
+        background: white; 
+        margin: 0 15px 16px; 
+        border-radius: 14px; 
+        padding: 15px 18px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between; 
+        color: #333; 
+        border: 1px solid #eee;
+        transition: 0.3s; 
+        cursor: pointer; 
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .quick-action-card:active { transform: scale(0.97); }
+    .qa-info { display: flex; align-items: center; gap: 14px; }
+    .qa-icon { width: 40px; height: 40px; background: #e8eaf6; color: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .qa-text div:first-child { font-weight: 700; font-size: 14px; color: #333; }
+    .qa-text div:last-child { font-size: 11px; color: #999; margin-top: 2px; }
+
+    .learn-list { padding: 0 15px 30px; }
+    .learn-item { 
+        background: white; 
+        border-radius: 14px; 
+        padding: 14px 18px; 
+        margin-bottom: 12px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between; 
+        color: #333; 
+        border: 1px solid #eee;
+        cursor: pointer; 
+        transition: 0.3s; 
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .learn-item:active { transform: scale(0.97); }
+    .li-icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-right: 14px; flex-shrink: 0; }
+
+    /* ADD MONEY */
+    .am-method-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        padding: 15px 15px 0 15px;
+    }
+
+    .am-card {
+        background: white;
+        border-radius: 8px;
+        padding: 12px 5px;
+        text-align: center;
+        position: relative;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        border: 2px solid transparent;
+        cursor: pointer;
+    }
+
+    .am-card img {
+        width: 35px;
+        height: 35px;
+        object-fit: contain;
+        display: block;
+        margin: 0 auto 5px;
+    }
+
+    .am-card span {
+        font-size: 12px;
+        font-weight: 600;
+        color: #555;
+    }
+
+    .am-card.active {
+        border-color: #9C27B0;
+    }
+
+    .am-check {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        color: #9C27B0;
+        font-size: 14px;
+        display: none;
+    }
+    .am-card.active .am-check { display: block; }
+
+    .am-content-container {
+        padding: 15px;
+    }
+
+    .am-box {
+        border-radius: 12px;
+        padding: 20px;
+        color: white;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    
+    .am-box.bkash { background-color: var(--bkash-color); }
+    .am-box.rocket { background-color: var(--rocket-color); }
+    .am-box.nagad { background-color: var(--nagad-color); }
+
+    .am-title {
+        text-align: center;
+        font-weight: 700;
+        font-size: 16px;
+        margin-bottom: 15px;
+    }
+
+    .am-input {
+        width: 100%;
+        padding: 12px;
+        border-radius: 5px;
+        border: none;
+        color: white;
+        font-size: 14px;
+        outline: none;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+    .am-input::placeholder { color: rgba(255,255,255,0.7); }
+
+    .am-box.bkash .am-input { background: var(--bkash-dark); }
+    .am-box.rocket .am-input { background: var(--rocket-dark); }
+    .am-box.nagad .am-input { background: var(--nagad-dark); }
+
+    .am-list {
+        list-style: none;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    .am-list li {
+        position: relative;
+        padding-left: 15px;
+        margin-bottom: 5px;
+    }
+
+    .am-list li::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 7px;
+        width: 8px;
+        height: 8px;
+        background: white;
+        border-radius: 50%;
+    }
+
+    .am-num-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 5px;
+        font-weight: 800;
+        color: #FFEB3B;
+        font-size: 15px;
+        flex-wrap: wrap;
+    }
+
+    .am-copy-btn {
+        background: rgba(255,255,255,0.2);
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 2px 8px;
+        font-size: 11px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        cursor: pointer;
+    }
+
+    .am-verify-btn {
+        width: 100%;
+        padding: 14px;
+        background: #E2136E;
+        color: white;
+        border: none;
+        font-weight: 900;
+        font-size: 18px;
+        text-transform: uppercase;
+        cursor: pointer;
+        border-radius: 8px;
+        margin-top: 15px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        transition: background 0.3s;
+    }
+
+    /* WITHDRAW */
+    .withdraw-new-container { background: #f5f5f5; min-height: 100vh; padding: 20px; }
+    .withdraw-balance-card { background: white; border-radius: 12px; padding: 30px 20px; text-align: center; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .wb-icon { font-size: 40px; color: #ffa000; margin-bottom: 10px; display: block; }
+    .wb-icon img { width: 40px; }
+    .wb-label { color: #777; font-weight: 700; font-size: 14px; margin-bottom: 5px; }
+    .wb-amount { color: #1a237e; font-size: 28px; font-weight: 900; }
+    .withdraw-section-box { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    .wsb-title { font-size: 14px; font-weight: 800; color: #333; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+    .method-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .method-card { border: 1px solid #eee; border-radius: 8px; padding: 15px 5px; text-align: center; cursor: pointer; transition: all 0.2s; }
+    .method-card img { width: 40px; height: 40px; object-fit: contain; display: block; margin: 0 auto 5px; }
+    .method-card span { font-size: 11px; font-weight: 700; color: #555; }
+    .method-card.active { border: 2px solid var(--primary); background: #e3f2fd; }
+    .wd-input-group { display: flex; align-items: center; border-bottom: 1px solid #eee; padding: 10px 0; margin-bottom: 20px; }
+    .wd-icon { color: #999; width: 30px; font-size: 18px; }
+    .wd-input { border: none; outline: none; flex: 1; font-size: 16px; font-weight: 600; color: #333; background: transparent; }
+    .min-notice { background: #fff3e0; color: #f57c00; padding: 10px; font-size: 12px; border-radius: 5px; display: flex; align-items: center; gap: 8px; font-weight: 700; margin-bottom: 20px; }
+    .wd-submit-btn { background: #00c853; color: white; width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 16px; font-weight: 800; text-transform: uppercase; cursor: pointer; box-shadow: 0 4px 10px rgba(0,200,83,0.3); }
+
+    /* HISTORY */
+    .history-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        margin: 10px 15px;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-left: 5px solid transparent;
+    }
+    
+    .hc-left { display: flex; flex-direction: column; gap: 3px; }
+    .hc-title { font-weight: 800; font-size: 14px; color: #333; text-transform: uppercase; }
+    .hc-date { font-size: 11px; color: #888; }
+    .hc-amount { font-size: 12px; font-weight: 800; color: #000; margin-top: 5px; }
+    
+    .hc-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+    .hc-tag { 
+        background: #111; 
+        color: white; 
+        padding: 2px 8px; 
+        border-radius: 4px; 
+        font-size: 10px; 
+        font-weight: 700; 
+    }
+
+    /* JOIN */
+    .join-card {
+        background: white;
+        margin: 15px;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .join-match-title {
+        font-size: 18px;
+        font-weight: 900;
+        color: #333;
+        margin-bottom: 5px;
+    }
+
+    .join-meta {
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 15px;
+    }
+
+    .join-info-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        color: #444;
+    }
+
+    .join-warning {
+        border: 1px dashed #ff9800;
+        color: #ff9800;
+        font-size: 13px;
+        font-weight: 600;
+        text-align: center;
+        padding: 10px;
+        border-radius: 5px;
+        margin: 15px 0;
+    }
+
+    .join-badge-container {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .join-badge {
+        background: #ffc107;
+        color: black;
+        padding: 5px 20px;
+        border-radius: 20px;
+        font-weight: 800;
+        font-size: 14px;
+        display: inline-block;
+    }
+
+    .join-input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+        margin-bottom: 10px;
+        outline: none;
+    }
+    
+    .join-btn-full {
+        position: fixed;
+        bottom: 20px;
+        left: 5%;
+        width: 90%;
+        background: #5E35B1;
+        color: white;
+        padding: 15px;
+        border-radius: 30px;
+        border: none;
+        font-size: 18px;
+        font-weight: 800;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(94, 53, 177, 0.4);
+        z-index: 100;
+    }
+
+    /* RULES */
+    .rules-container {
+        background: #f0f4ff;
+        margin: 10px 0 14px;
+        padding: 12px 16px;
+        border-radius: 8px;
+        border: 1px solid #e0e8f0;
+    }
+
+    .rules-container h4 {
+        color: #d32f2f;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+    }
+
+    .rules-container ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .rules-container ul li {
+        padding: 3px 0 3px 18px;
+        position: relative;
+        color: #444;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .rules-container ul li::before {
+        content: '▸';
+        position: absolute;
+        left: 0;
+        color: var(--primary);
+    }
+
+    /* LEADERBOARD - Only 20 Users */
+    .leaderboard-container { padding: 15px; }
+
+    .lb-header {
+        text-align: center;
+        padding: 25px;
+        background: linear-gradient(135deg, #1a1040, #2a1a60);
+        border-radius: 16px;
+        margin-bottom: 20px;
+        border: 1px solid rgba(255,215,0,0.08);
+    }
+
+    .lb-header h2 {
+        font-size: 24px;
+        font-weight: 900;
+        color: #ffd700;
+    }
+
+    .lb-header p {
+        color: rgba(255,255,255,0.6);
+        font-size: 13px;
+        margin-top: 4px;
+    }
+
+    .lb-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 16px;
+        background: white;
+        border-radius: 12px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        transition: 0.3s;
+    }
+
+    .lb-item:active {
+        transform: scale(0.98);
+    }
+
+    .lb-rank {
+        font-size: 18px;
+        font-weight: 900;
+        min-width: 36px;
+        text-align: center;
+        color: #999;
+    }
+
+    .lb-rank.top1 { color: #FFD700; font-size: 22px; }
+    .lb-rank.top2 { color: #C0C0C0; font-size: 20px; }
+    .lb-rank.top3 { color: #CD7F32; font-size: 20px; }
+
+    .lb-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), #5C6BC0);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 800;
+        font-size: 16px;
+        flex-shrink: 0;
+    }
+
+    .lb-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .lb-name {
+        font-weight: 700;
+        font-size: 15px;
+        color: #333;
+    }
+
+    .lb-amount {
+        font-weight: 900;
+        font-size: 18px;
+        color: var(--success);
+        flex-shrink: 0;
+    }
+
+    .lb-more {
+        text-align: center;
+        padding: 15px;
+        color: #999;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    /* EDIT PROFILE */
+    .ep-container { padding: 20px; }
+    .ep-avatar-section { text-align: center; margin-bottom: 25px; }
+    .ep-avatar-ring { width: 100px; height: 100px; border-radius: 50%; border: 4px solid #42a5f5; padding: 5px; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; }
+    .ep-avatar-icon { font-size: 50px; color: #42a5f5; }
+    .ep-username { font-size: 20px; font-weight: 800; color: #333; }
+    .ep-email { font-size: 13px; color: #777; }
+    .ep-card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .ep-card-title { font-size: 16px; font-weight: 800; color: #333; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+    .ep-input-group { position: relative; margin-bottom: 15px; }
+    .ep-input-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #333; font-size: 18px; }
+    .ep-input { width: 100%; padding: 12px 12px 12px 45px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none; }
+    .ep-input:disabled { background: #f5f5f5; }
+    .ep-btn { width: 100%; padding: 15px; background: #263238; color: white; font-weight: 800; border: none; border-radius: 8px; cursor: pointer; }
+
+    /* DEVELOPER */
+    .dev-page { padding: 20px; background: #fff; min-height: 100vh; }
+    .dev-card { background: #f8f9fa; border-radius: 12px; padding: 20px; }
+    .dev-main-text { font-size: 18px; font-weight: 800; color: #333; margin-bottom: 10px; }
+    .dev-desc { font-size: 14px; color: #555; line-height: 1.5; margin-bottom: 15px; }
+    .dev-features { list-style: none; margin-bottom: 15px; }
+    .dev-features li { font-size: 14px; font-weight: 600; color: #333; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
+    .dev-price { font-size: 16px; font-weight: 800; color: #D32F2F; display: flex; align-items: center; gap: 5px; margin-top: 10px; }
+    .dev-link { display: block; margin-top: 20px; color: var(--primary); font-weight: 800; text-decoration: underline; font-size: 14px; }
+
+    /* MODALS */
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 3000; display: none; align-items: center; justify-content: center; }
+    .modal.active { display: flex; }
+    .modal-box { background: white; width: 90%; max-width: 350px; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+    .popup-header-yellow { background: #FFD54F; padding: 15px; text-align: center; position: relative; }
+    .popup-title { font-weight: 900; font-size: 18px; color: #000; text-transform: uppercase; }
+    .popup-subtitle { font-size: 11px; color: #444; margin-top: 2px; }
+    .popup-close-btn { position: absolute; top: -15px; left: 50%; transform: translateX(-50%) translateY(-50%); background: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #555; box-shadow: 0 2px 5px rgba(0,0,0,0.2); cursor: pointer; z-index: 5; }
+    .popup-content { padding: 20px; background: white; text-align: center; }
+    .prize-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 14px; color: #555; justify-content: flex-start; }
+    .prize-icon { width: 16px; text-align: center; }
+    .startup-modal-box { background: white; border-radius: 15px; padding: 25px; width: 85%; max-width: 320px; text-align: left; position: relative; }
+    .startup-content { font-size: 14px; color: #333; line-height: 1.6; margin-bottom: 20px; }
+    .startup-btn { background: #ff9800; color: white; font-weight: 800; font-size: 16px; width: 100%; padding: 12px; border: none; border-radius: 30px; cursor: pointer; }
+    .warning-popup-icon { font-size: 40px; color: #FF5722; margin-bottom: 15px; }
+    .warning-popup-btn { background: #FF5722; color: white; border: none; padding: 10px 25px; border-radius: 5px; font-weight: bold; margin-top: 15px; cursor: pointer; }
+
+    /* EMPTY */
+    .empty-msg {
+        text-align: center;
+        padding: 30px;
+        color: #999;
+        font-weight: 600;
+    }
+
+    /* FAB TELEGRAM */
+    .fab-telegram { position: fixed; bottom: 80px; right: 20px; width: 50px; height: 50px; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 999; cursor: pointer; background: var(--primary-light); padding: 5px; }
+    .fab-telegram img { width: 100%; height: 100%; }
+
+    /* TAB BAR */
+    .tab-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 65px; background: white; display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 1000; border-top: 1px solid #f0f0f0; }
+    .tab-bar.hidden { display: none; }
+    .tab-item { display: flex; flex-direction: column; align-items: center; width: 20%; color: #000; opacity: 1; cursor: pointer; }
+    .tab-icon-box { display: flex; justify-content: center; align-items: center; margin-bottom: 2px; transition: all 0.2s ease; }
+    .tab-item img { width: 24px; height: 24px; opacity: 1; filter: none; }
+    .tab-item span { font-size: 10px; margin-top: 2px; font-weight: 600; color: #555; }
+    .tab-item.active span { font-weight: 900; color: #000; }
+    .tab-item.active .tab-icon-box { background-color: var(--primary-light); width: 60px; height: 32px; border-radius: 16px; }
+
+    /* MATCH DETAILS */
+    .md-info-card { background: white; padding: 20px; text-align: center; border-bottom: 1px solid #ddd; }
+    .md-title { font-size: 18px; font-weight: 900; color: #333; margin-bottom: 5px; }
+    .md-time { font-size: 14px; color: #666; margin-bottom: 10px; }
+    .md-table-container { padding: 15px; background: white; margin-top: 10px; }
+    .md-table-header { display: flex; justify-content: space-between; font-weight: 800; padding-bottom: 10px; border-bottom: 2px solid var(--primary); margin-bottom: 10px; }
+    .md-p-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 13px; }
+
+    /* RESULT DETAILS - Read Only */
+    .rd-card { 
+        background: white; 
+        margin: 15px; 
+        border-radius: 5px; 
+        overflow: hidden; 
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        pointer-events: none;
+    }
+
+    .rd-card .rd-header-blue, 
+    .rd-card .rd-table-head,
+    .rd-card .rd-row {
+        pointer-events: none !important;
+    }
+
+    .rd-title-box { padding: 15px; text-align: center; border-bottom: 1px solid #eee; }
+    .rd-main-title { font-weight: 800; font-size: 16px; margin-bottom: 5px; text-transform: uppercase; }
+    .rd-sub-title { font-size: 12px; color: #666; }
+    .rd-stats-row { display: flex; justify-content: space-around; padding: 15px 0; text-align: center; }
+    .rd-stat-item div:first-child { font-size: 11px; color: #888; font-weight: 700; margin-bottom: 5px; }
+    .rd-stat-item div:last-child { font-size: 14px; font-weight: 900; color: #000; }
+    .rd-header-blue { background: #3F51B5; color: white; text-align: center; font-weight: 800; font-size: 14px; padding: 8px; text-transform: uppercase; }
+    .rd-table-head { display: flex; background: #000; color: white; padding: 8px 10px; font-size: 12px; font-weight: 700; }
+    .rd-row { display: flex; padding: 10px; background: white; border-bottom: 1px solid #eee; font-size: 13px; align-items: center; }
+    .col-hash { width: 10%; text-align: center; }
+    .col-name { width: 50%; font-weight: 600; }
+    .col-kill { width: 20%; text-align: center; }
+    .col-win { width: 20%; text-align: right; }
+
+    /* UID MODAL */
+    .uid-modal-input {
+        width: 100%;
+        padding: 14px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 16px;
+        text-align: center;
+        outline: none;
+        transition: 0.3s;
+    }
+
+    .uid-modal-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(63,81,181,0.1);
+    }
+</style>
 </head>
 <body>
-<div id="app"></div><div id="toast"></div>
-<script type="module" src="js/app.js"></script>
+
+<!-- SPLASH SCREEN -->
+<div id="app-splash">
+    <div class="splash-logo-box">
+        <img id="splash-logo" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Logo">
+    </div>
+    <div class="splash-app-name" id="splash-app-name">Iasan Tour</div>
+    <div class="splash-version">1.0</div>
+    
+    <div class="splash-bottom-area">
+        <div class="splash-welcome">Welcome back!</div>
+        <div class="splash-line"></div>
+        <div class="splash-dots-container">
+            <div class="splash-dot"></div>
+            <div class="splash-dot"></div>
+            <div class="splash-dot"></div>
+        </div>
+    </div>
+    
+    <span class="particle" style="left: 10%; animation-duration: 5s;"></span>
+    <span class="particle" style="left: 20%; animation-duration: 7s; animation-delay: 1s;"></span>
+    <span class="particle" style="left: 35%; animation-duration: 6s; animation-delay: 2s;"></span>
+    <span class="particle" style="left: 50%; animation-duration: 8s;"></span>
+    <span class="particle" style="left: 65%; animation-duration: 5s; animation-delay: 1.5s;"></span>
+    <span class="particle" style="left: 80%; animation-duration: 9s; animation-delay: 0.5s;"></span>
+    <span class="particle" style="left: 90%; animation-duration: 6s;"></span>
+</div>
+
+<!-- GLOBAL LOADER -->
+<div id="global-loader">
+    <div class="spinner"></div>
+</div>
+
+<!-- FAB TELEGRAM -->
+<div class="fab-telegram" onclick="window.openSupport()">
+    <img src="https://img.icons8.com/?size=100&id=yjJvTQzQoKEy&format=png&color=000000" alt="Support">
+</div>
+
+<!-- AUTH VIEW -->
+<div id="auth-view">
+    <div id="login-container" style="width:100%; height:100%; display:flex; flex-direction:column;">
+        <div class="auth-top-section">
+            <div class="auth-title-large">Welcome Back</div>
+            <div class="auth-subtitle">Sign in to your account</div>
+        </div>
+        <div class="auth-bottom-card">
+            <div class="auth-card-title">Sign In</div>
+            <div class="auth-input-group">
+                <input type="email" id="login-email" class="auth-input-field" placeholder="Email Address">
+            </div>
+            <div class="auth-input-group">
+                <input type="password" id="login-pass" class="auth-input-field" placeholder="Password">
+                <i class="fas fa-eye-slash auth-password-eye"></i>
+            </div>
+            <div class="auth-checkbox-row">
+                <input type="checkbox" checked>
+                <span>I agree to the Terms and Conditions and Privacy Policy</span>
+            </div>
+            <button class="auth-black-btn" onclick="window.emailLogin()">Sign In</button>
+            <div class="auth-forget-link">Forget Password ?</div>
+            <div class="auth-footer-link">
+                I'm a new user <span onclick="window.toggleAuthMode('register')">Register Now</span>
+            </div>
+        </div>
+    </div>
+    
+    <div id="register-container" style="width:100%; height:100%; display:none; flex-direction:column;">
+        <div class="auth-top-section">
+            <div class="auth-title-large">Let's Start</div>
+            <div class="auth-subtitle">Create an account</div>
+        </div>
+        <div class="auth-bottom-card">
+            <div class="auth-card-title">Sign Up</div>
+            <div class="auth-input-group">
+                <input type="text" id="reg-username" class="auth-input-field" placeholder="UserName">
+            </div>
+            <div class="auth-input-group">
+                <input type="email" id="reg-email" class="auth-input-field" placeholder="Email Address">
+            </div>
+            <div class="auth-input-group">
+                <input type="number" id="reg-phone" class="auth-input-field" placeholder="Mobile Number">
+            </div>
+            <div class="auth-input-group">
+                <input type="password" id="reg-pass" class="auth-input-field" placeholder="Password">
+                <i class="fas fa-eye-slash auth-password-eye"></i>
+            </div>
+            <div class="auth-checkbox-row">
+                <input type="checkbox" checked>
+                <span>I agree to the Terms and Conditions and Privacy Policy</span>
+            </div>
+            <button class="auth-black-btn" onclick="window.emailRegister()">Sign Up</button>
+            <div class="auth-footer-link">
+                Already have an account <span onclick="window.toggleAuthMode('login')">Sign in here</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<main id="main-content" style="display:none;">
+    
+    <!-- SHOP -->
+    <section id="tab-shop-view" class="app-section">
+        <div class="shop-title">💎 Diamond Shop</div>
+        <div class="shop-balance-card">
+            <div class="shop-balance-label">Your Winning Balance</div>
+            <div class="shop-balance-amount">৳ <span id="shop-balance">0</span></div>
+            <div class="shop-balance-label-small">Use your winnings to buy diamonds</div>
+        </div>
+        <div class="shop-package-grid" id="shop-package-grid"></div>
+    </section>
+
+    <!-- HOME -->
+    <section id="tab-home-view" class="app-section active">
+        <div class="hero-banner">
+            <div class="slider-container" id="slider-touch-area">
+                <div id="banner-slider-wrapper" class="slider-wrapper"></div>
+            </div>
+            <div id="slider-dots" class="slider-dots"></div>
+        </div>
+
+        <div class="home-content-wrapper">
+            <div class="marquee-container">
+                <span class=""></span>
+                <div id="dynamic-notice">Welcome to Iasan Tour! Join matches and win big prizes.</div>
+            </div>
+
+            <div class="category-title">FREE FIRE</div>
+            <div id="dynamic-category-list" class="category-grid"></div>
+        </div>
+    </section>
+
+    <!-- MY MATCHES -->
+    <section id="tab-mymatches-view" class="app-section">
+        <h2 style="margin-bottom:15px; font-weight:900; color:#333; padding:15px;">My Matches</h2>
+        <div id="mymatches-container" style="padding:0;"></div>
+    </section>
+
+    <!-- RESULTS - Read Only -->
+    <section id="tab-result-view" class="app-section">
+        <h2 style="margin-bottom:15px; font-weight:900; color:#333; padding:15px;">Results</h2>
+        <div id="result-container" style="padding:0 15px;"></div>
+    </section>
+
+    <!-- PROFILE -->
+    <section id="tab-profile-view" class="app-section" style="padding:0;">
+        <div class="profile-header-bg">
+            <div class="profile-avatar-box">
+                <img id="profile-avatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
+            </div>
+            <h3 id="profile-name" style="margin-top:5px; font-weight:800;">Guest User</h3>
+            <p id="profile-email" style="opacity:0.9; font-size:13px; margin-bottom:15px;">Please login to continue</p>
+            <div style="display:flex; justify-content:center; gap:30px;">
+                <div>
+                    <div style="font-size:12px; opacity:0.8;">Deposit</div>
+                    <div style="font-weight:bold; font-size:18px;">৳ <span id="profile-bal-dep">0</span></div>
+                </div>
+                <div>
+                    <div style="font-size:12px; opacity:0.8;">Winnings</div>
+                    <div style="font-weight:bold; font-size:18px;">৳ <span id="profile-bal-win">0</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div style="padding: 20px;">
+            <!-- Rules Button -->
+            <div class="profile-rules-btn" onclick="window.navigateSub('rules')">
+                <div class="rules-left">
+                    <i class="fas fa-list-ul"></i>
+                    <div>
+                        <span>Match Rules</span>
+                        <small>View all category rules</small>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right" style="color:#666;"></i>
+            </div>
+
+            <div class="menu-list" style="margin-top:15px;">
+                <div class="menu-item" onclick="window.navigateSub('wallet')">
+                    <i class="fas fa-wallet menu-icon"></i>
+                    <span>My Wallet</span>
+                    <i class="fas fa-chevron-right" style="margin-left:auto; color:#ccc;"></i>
+                </div>
+                <div class="menu-item" onclick="window.navigateSub('edit-profile')">
+                    <i class="fas fa-user-edit menu-icon"></i>
+                    <span>Edit Profile</span>
+                    <i class="fas fa-chevron-right" style="margin-left:auto; color:#ccc;"></i>
+                </div>
+                <div class="menu-item" onclick="window.navigateSub('history')">
+                    <i class="fas fa-history menu-icon"></i>
+                    <span>All Transactions</span>
+                    <i class="fas fa-chevron-right" style="margin-left:auto; color:#ccc;"></i>
+                </div>
+                <div class="menu-item" onclick="window.navigateSub('notifications')">
+                    <i class="fas fa-bell menu-icon"></i>
+                    <span>Notification</span>
+                    <span id="menu-notif-badge" style="background:red; color:white; font-size:10px; padding:2px 6px; border-radius:10px; margin-left:auto; display:none;">0</span>
+                </div>
+                <div class="menu-item" onclick="window.navigateSub('leaderboard')">
+                    <i class="fas fa-trophy menu-icon" style="color:var(--secondary);"></i>
+                    <span>Leaderboard</span>
+                    <i class="fas fa-chevron-right" style="margin-left:auto; color:#ccc;"></i>
+                </div>
+                <div class="menu-item" onclick="window.navigateSub('developer')">
+                    <i class="fas fa-code menu-icon"></i>
+                    <span>Developer</span>
+                    <i class="fas fa-chevron-right" style="margin-left:auto; color:#ccc;"></i>
+                </div>
+                <div class="menu-item" onclick="window.handleLogout()" id="profile-logout-btn">
+                    <i class="fas fa-sign-out-alt menu-icon" style="color:var(--danger);"></i>
+                    <span style="color:var(--danger);">Logout</span>
+                </div>
+            </div>
+
+            <div style="text-align:center; margin-top:20px; color:#ccc; font-size:12px;">App Version 2.0</div>
+        </div>
+    </section>
+
+    <!-- MATCHES VIEW -->
+    <section id="matches-view" class="app-section">
+        <div class="back-nav" onclick="window.goBackFromMatches()">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </div>
+        <div class="match-tabs-container">
+            <div class="m-tab active" id="mt-Upcoming" onclick="window.filterMatchTab('Upcoming')">Upcoming</div>
+            <div class="m-tab" id="mt-Ongoing" onclick="window.filterMatchTab('Ongoing')">On-Going</div>
+            <div class="m-tab" id="mt-Finished" onclick="window.filterMatchTab('Finished')">Result</div>
+        </div>
+        <div id="matches-container" style="padding:15px;"></div>
+    </section>
+
+    <!-- MATCH DETAILS -->
+    <section id="match-details-view" class="app-section">
+        <div class="back-nav" onclick="window.goBackFromMatchDetails()"><i class="fas fa-arrow-left"></i> Match Details</div>
+        <div class="md-info-card">
+            <div class="md-title" id="md-title">Match Name</div>
+            <div class="md-time" id="md-time">Starts In: Loading...</div>
+            <div id="md-timer" class="mc-footer-timer match-countdown" style="margin-top:10px; border-radius:5px;"></div>
+        </div>
+        <div class="md-table-container">
+            <div class="md-table-header">
+                <span>Participants</span>
+                <span id="md-count">0/0</span>
+            </div>
+            <div id="md-p-list"></div>
+        </div>
+    </section>
+
+    <!-- RESULT DETAILS - Read Only, No Click -->
+    <section id="result-details-view" class="app-section">
+        <div class="back-nav" onclick="window.goBackFromResultDetails()"><i class="fas fa-arrow-left"></i> Results</div>
+        <div id="rd-container"></div>
+    </section>
+
+    <!-- JOIN MATCH -->
+    <section id="join-match-view" class="app-section">
+        <div class="back-nav" onclick="window.goBackFromJoin()"><i class="fas fa-arrow-left"></i> Match Joining</div>
+        <div class="join-card">
+            <div class="join-match-title" id="join-page-title">Match Name</div>
+            <div class="join-meta" id="join-page-meta">Time</div>
+            <div class="join-info-row">
+                <span>Win Prize: <span id="join-page-win">0</span>TK</span>
+                <span>Entry Fee: <span id="join-page-fee">0</span>TK</span>
+            </div>
+            <div id="join-rules-container" style="display:none;">
+                <div class="rules-container">
+                    <h4><i class="fas fa-list"></i> Match Rules</h4>
+                    <ul id="join-rules-list"></ul>
+                </div>
+            </div>
+            <div class="join-warning">
+                *অবশ্যই এখানে আপনার গেমের এর নামটি দিয়ে জয়েন করবেন।
+            </div>
+            <div class="join-badge-container">
+                <div class="join-badge" id="join-page-type">Solo</div>
+            </div>
+            <div class="join-inputs" id="join-inputs-container"></div>
+        </div>
+        <button class="join-btn-full" onclick="window.confirmJoin()">Join Now!</button>
+    </section>
+
+    <!-- WALLET - White Theme -->
+    <section id="wallet-view" class="app-section">
+        <div class="wallet-redesign-container">
+            <div class="back-nav" onclick="window.showTab('profile')">
+                <i class="fas fa-arrow-left"></i> My Wallet
+            </div>
+            <div class="wallet-gradient-card">
+                <div class="wg-header">
+                    <i class="fas fa-credit-card"></i> 
+                    IasanTour <span class="wg-wallet-text">WALLET</span>
+                </div>
+                <div class="wg-label">Available Balance</div>
+                <div class="wg-balance">৳ <span id="wallet-balance-display">0</span></div>
+                <div class="wg-footer">GAMING</div>
+            </div>
+            <div class="wallet-stats-white-card">
+                <div class="ws-item">
+                    <div class="ws-icon"><i class="fas fa-wallet" style="color:#2196f3"></i></div>
+                    <div class="ws-label">DEPOSITED</div>
+                    <div class="ws-amount">৳ <span id="deposit-available-wallet">0</span></div>
+                </div>
+                <div class="ws-item">
+                    <div class="ws-icon"><i class="fas fa-trophy" style="color:#000"></i></div>
+                    <div class="ws-label">WINNING</div>
+                    <div class="ws-amount">৳ <span id="withdraw-available-wallet">0</span></div>
+                </div>
+            </div>
+            <div class="wallet-action-row">
+                <button class="wa-btn add" onclick="window.navigateSub('add-money')">
+                    <i class="fas fa-plus-circle"></i> Add Money
+                </button>
+                <button class="wa-btn withdraw" onclick="window.navigateSub('withdraw')">
+                    <i class="fas fa-money-bill-wave"></i> Withdraw
+                </button>
+            </div>
+            <div class="wallet-section-title"><i class="fas fa-bolt" style="color:#ff6b00;"></i> Quick Actions</div>
+            <div class="quick-action-card" onclick="window.navigateSub('history')">
+                <div class="qa-info">
+                    <div class="qa-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="qa-text">
+                        <div>Transaction History</div>
+                        <div>View all your transactions</div>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right" style="color:#ccc;"></i>
+            </div>
+            <div class="wallet-section-title"><i class="fas fa-info-circle" style="color:#4FC3F7;"></i> Learn and Support</div>
+            <div class="learn-list">
+                <div class="learn-item" onclick="window.openVideo('addMoney')">
+                    <div class="qa-info">
+                        <div class="li-icon"><i class="fas fa-gamepad" style="color:#ff6b00;"></i></div>
+                        <div class="qa-text">
+                            <div>How to add money?</div>
+                            <div style="color:#999; font-size:11px;">কিভাবে টাকা অ্যাড করবেন</div>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color:#ccc;"></i>
+                </div>
+                <div class="learn-item" onclick="window.openVideo('howPlay')">
+                    <div class="qa-info">
+                        <div class="li-icon"><img src="https://cdn-icons-png.flaticon.com/512/3063/3063205.png" width="36" style="border-radius:4px;"></div>
+                        <div class="qa-text">
+                            <div>How to join a match?</div>
+                            <div style="color:#999; font-size:11px;">কিভাবে ম্যাচে জয়েন করবেন</div>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color:#ccc;"></i>
+                </div>
+                <div class="learn-item" onclick="window.openVideo('getRoom')">
+                    <div class="qa-info">
+                        <div class="li-icon"><img src="https://cdn-icons-png.flaticon.com/512/1256/1256650.png" width="36" style="border-radius:4px;"></div>
+                        <div class="qa-text">
+                            <div>How to get Room ID?</div>
+                            <div style="color:#999; font-size:11px;">কিভাবে রুম আইডি পাবেন</div>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color:#ccc;"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ADD MONEY -->
+    <section id="add-money-view" class="app-section">
+        <div class="back-nav" onclick="window.navigateSub('wallet')"><i class="fas fa-arrow-left"></i> Add Money</div>
+        <div class="am-method-grid">
+            <div class="am-card active" id="tab-bkash" onclick="window.switchPayTab('bkash')">
+                <i class="fas fa-check-circle am-check"></i>
+                <img src="https://i.ibb.co.com/qF1xD5xj/image-search-1769091253468.png" alt="bKash">
+                <span>bKash</span>
+            </div>
+            <div class="am-card" id="tab-rocket" onclick="window.switchPayTab('rocket')">
+                <i class="fas fa-check-circle am-check"></i>
+                <img src="https://i.ibb.co.com/MDt4TzDf/image-search-1769091463880.png" alt="Rocket">
+                <span>Rocket</span>
+            </div>
+            <div class="am-card" id="tab-nagad" onclick="window.switchPayTab('nagad')">
+                <i class="fas fa-check-circle am-check"></i>
+                <img src="https://i.ibb.co.com/4gmdTj1f/image-search-1769091285966.png" alt="Nagad">
+                <span>Nagad</span>
+            </div>
+        </div>
+        <div class="am-content-container">
+            <div id="content-bkash" class="am-box bkash">
+                <div class="am-title">ট্রানজেকশন আইডি দিন</div>
+                <input type="text" id="trx-bkash" class="am-input" placeholder="ট্রানজেকশন আইডি দিন">
+                <ul class="am-list">
+                    <li>*247# ডায়াল করে আপনার BKASH মোবাইল মেনুতে যান অথবা BKASH অ্যাপে যান ।</li>
+                    <li style="color:#FFEB3B; font-weight:bold;">Send Money/Make Payment - এ ক্লিক করুন ।</li>
+                    <li>প্রাপক নম্বর হিসেবে নিচের এই নম্বরটি লিখুন</li>
+                </ul>
+                <div class="am-num-row">
+                    <span id="bkash-num-display">Loading...</span>
+                    <span style="font-weight:400; color:white; font-size:12px;">(Send Money)</span>
+                    <button class="am-copy-btn" onclick="window.copyToClipboard('bkash-num-display')"><i class="far fa-copy"></i> Copy</button>
+                </div>
+                <ul class="am-list" style="margin-top:10px;">
+                    <li>নিশ্চিত করতে এখন আপনার BKASH মোবাইল মেনু পিন লিখুন।</li>
+                    <li>এখন উপরের বক্সে আপনার Transaction ID এবং Amount দিন আর নিচের VERIFY বাটনে ক্লিক করুন।</li>
+                </ul>
+            </div>
+            <div id="content-rocket" class="am-box rocket" style="display:none;">
+                <div class="am-title">ট্রানজেকশন আইডি দিন</div>
+                <input type="text" id="trx-rocket" class="am-input" placeholder="ট্রানজেকশন আইডি দিন">
+                <ul class="am-list">
+                    <li>*322# ডায়াল করে আপনার Rocket মোবাইল মেনুতে যান অথবা Rocket অ্যাপে যান ।</li>
+                    <li style="color:#FFEB3B; font-weight:bold;">Send Money - এ ক্লিক করুন ।</li>
+                    <li>প্রাপক নম্বর হিসেবে নিচের এই নম্বরটি লিখুন</li>
+                </ul>
+                <div class="am-num-row">
+                    <span id="rocket-num-display">Loading...</span>
+                    <span style="font-weight:400; color:white; font-size:12px;">(Send Money)</span>
+                    <button class="am-copy-btn" onclick="window.copyToClipboard('rocket-num-display')"><i class="far fa-copy"></i> Copy</button>
+                </div>
+                <ul class="am-list" style="margin-top:10px;">
+                    <li>নিশ্চিত করতে এখন আপনার Rocket মোবাইল মেনু পিন লিখুন।</li>
+                    <li>এখন উপরের বক্সে আপনার Transaction ID এবং Amount দিন আর নিচের VERIFY বাটনে ক্লিক করুন।</li>
+                </ul>
+            </div>
+            <div id="content-nagad" class="am-box nagad" style="display:none;">
+                <div class="am-title">ট্রানজেকশন আইডি দিন</div>
+                <input type="text" id="trx-nagad" class="am-input" placeholder="ট্রানজেকশন আইডি দিন">
+                <ul class="am-list">
+                    <li>*167# ডায়াল করে আপনার NAGAD মোবাইল মেনুতে যান অথবা NAGAD অ্যাপে যান ।</li>
+                    <li style="color:#FFEB3B; font-weight:bold;">Send Money - এ ক্লিক করুন ।</li>
+                    <li>প্রাপক নম্বর হিসেবে নিচের এই নম্বরটি লিখুন</li>
+                </ul>
+                <div class="am-num-row">
+                    <span id="nagad-num-display">Loading...</span>
+                    <span style="font-weight:400; color:white; font-size:12px;">(Send Money)</span>
+                    <button class="am-copy-btn" onclick="window.copyToClipboard('nagad-num-display')"><i class="far fa-copy"></i> Copy</button>
+                </div>
+                <ul class="am-list" style="margin-top:10px;">
+                    <li>নিশ্চিত করতে এখন আপনার NAGAD মোবাইল মেনু পিন লিখুন।</li>
+                    <li>এখন উপরের বক্সে আপনার Transaction ID এবং Amount দিন আর নিচের VERIFY বাটনে ক্লিক করুন।</li>
+                </ul>
+            </div>
+            <button class="am-verify-btn" onclick="window.triggerVerify()">VERIFY</button>
+        </div>
+    </section>
+
+    <!-- WITHDRAW -->
+    <section id="withdraw-view" class="app-section">
+        <div class="back-nav dark-mode" onclick="window.navigateSub('wallet')"><i class="fas fa-arrow-left"></i> Withdraw Money</div>
+        <div class="withdraw-new-container">
+            <div class="withdraw-balance-card">
+                <div class="wb-icon"><img src="https://cdn-icons-png.flaticon.com/512/855/855279.png"></div>
+                <div class="wb-label">Available Balance</div>
+                <div class="wb-amount">BDT <span id="withdraw-available">0</span></div>
+            </div>
+            <div class="withdraw-section-box">
+                <div class="wsb-title"><i class="fas fa-wallet"></i> Select Payment Method</div>
+                <div class="method-grid">
+                    <div class="method-card active" onclick="window.selectWithdrawMethod(this, 'bKash')">
+                        <img src="https://i.ibb.co.com/qF1xD5xj/image-search-1769091253468.png">
+                        <span>bKash</span>
+                    </div>
+                    <div class="method-card" onclick="window.selectWithdrawMethod(this, 'Nagad')">
+                        <img src="https://i.ibb.co.com/4gmdTj1f/image-search-1769091285966.png">
+                        <span>Nagad</span>
+                    </div>
+                    <div class="method-card" onclick="window.selectWithdrawMethod(this, 'Rocket')">
+                        <img src="https://i.ibb.co.com/MDt4TzDf/image-search-1769091463880.png">
+                        <span>Rocket</span>
+                    </div>
+                </div>
+                <input type="hidden" id="withdraw-method" value="bKash">
+            </div>
+            <div class="withdraw-section-box">
+                <div class="wsb-title"><i class="fas fa-file-invoice"></i> Withdrawal Details</div>
+                <div class="wd-input-group">
+                    <i class="fas fa-phone-alt wd-icon"></i>
+                    <input type="number" id="withdraw-number" class="wd-input" placeholder="Mobile Number">
+                </div>
+                <div class="wd-input-group">
+                    <i class="fas fa-coins wd-icon"></i>
+                    <input type="number" id="withdraw-amount" class="wd-input" placeholder="Amount to Withdraw">
+                </div>
+                <div class="min-notice">
+                    <i class="fas fa-info-circle"></i> MINIMUM WITHDRAW 100 TK
+                </div>
+                <button class="wd-submit-btn" onclick="window.submitWithdraw()">Withdraw Money</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- HISTORY -->
+    <section id="history-view" class="app-section">
+        <div class="back-nav" onclick="window.showTab('profile')"><i class="fas fa-arrow-left"></i> Transactions</div>
+        <div id="history-list" style="background:#f9f9f9; min-height:100vh;"></div>
+    </section>
+
+    <!-- NOTIFICATIONS -->
+    <section id="notifications-view" class="app-section">
+        <div class="back-nav" onclick="window.showTab('profile')"><i class="fas fa-arrow-left"></i> Notifications</div>
+        <div id="notif-list-container" style="background:white;"></div>
+    </section>
+
+    <!-- LEADERBOARD - Only 20 Users -->
+    <section id="leaderboard-view" class="app-section">
+        <div class="back-nav" onclick="window.showTab('profile')">
+            <i class="fas fa-arrow-left"></i> Leaderboard
+        </div>
+        <div class="leaderboard-container">
+            <div class="lb-header">
+                <h2>🏆 Leaderboard</h2>
+                <p>Top 20 players ranked by winnings</p>
+            </div>
+            <div id="leaderboard-list"></div>
+        </div>
+    </section>
+
+    <!-- EDIT PROFILE -->
+    <section id="edit-profile-view" class="app-section">
+        <div class="back-nav dark-mode" onclick="window.showTab('profile')"><i class="fas fa-arrow-left"></i> My Profile</div>
+        <div class="ep-container">
+            <div class="ep-avatar-section">
+                <div class="ep-avatar-ring">
+                    <i class="fas fa-user ep-avatar-icon"></i>
+                </div>
+                <div class="ep-username" id="ep-name-display">User</div>
+                <div class="ep-email" id="ep-email-display">user@mail.com</div>
+            </div>
+            <div class="ep-card">
+                <div class="ep-card-title"><i class="fas fa-user"></i> Basic Details</div>
+                <div class="ep-input-group">
+                    <i class="fas fa-user-circle ep-input-icon"></i>
+                    <input type="text" id="ep-username" class="ep-input" placeholder="Username">
+                </div>
+                <div class="ep-input-group">
+                    <i class="fas fa-envelope ep-input-icon"></i>
+                    <input type="email" id="ep-email" class="ep-input" placeholder="Email" disabled style="background:#f5f5f5;">
+                </div>
+                <div class="ep-input-group">
+                    <i class="fas fa-phone ep-input-icon"></i>
+                    <input type="number" id="ep-phone" class="ep-input" placeholder="Mobile Number">
+                </div>
+            </div>
+            <div class="ep-card">
+                <div class="ep-card-title"><i class="fas fa-lock"></i> Password Change</div>
+                <div class="ep-input-group">
+                    <i class="fas fa-lock ep-input-icon"></i>
+                    <input type="password" id="ep-pass-cur" class="ep-input" placeholder="Current Password">
+                </div>
+                <div class="ep-input-group">
+                    <i class="fas fa-lock ep-input-icon"></i>
+                    <input type="password" id="ep-pass-new" class="ep-input" placeholder="New Password">
+                </div>
+                <div class="ep-input-group">
+                    <i class="fas fa-lock ep-input-icon"></i>
+                    <input type="password" id="ep-pass-con" class="ep-input" placeholder="Confirm Password">
+                </div>
+            </div>
+            <button class="ep-btn" onclick="window.saveProfile()">Update Profile</button>
+        </div>
+    </section>
+
+    <!-- RULES PAGE -->
+    <section id="rules-view" class="app-section">
+        <div class="back-nav" onclick="window.showTab('profile')">
+            <i class="fas fa-arrow-left"></i> Match Rules
+        </div>
+        <div class="rules-page-header">
+            <h2><i class="fas fa-list-ul"></i> Match Rules</h2>
+            <p>All category rules at a glance</p>
+        </div>
+        <div class="rules-category-list" id="rules-category-list">
+            <!-- Loaded dynamically -->
+        </div>
+    </section>
+
+    <!-- DEVELOPER -->
+    <section id="developer-view" class="app-section" style="background: #fff; min-height: 100vh;">
+        <div class="back-nav" onclick="window.showTab('profile')" style="background: transparent; border: none; padding: 25px 20px; justify-content: flex-start; align-items: center; gap: 15px;">
+            <i class="fas fa-chevron-left" style="font-size: 22px; color: #000;"></i> 
+            <span style="font-size: 20px; font-weight: 800; color: #000;">Developer Profile</span>
+        </div>
+        <div class="dev-page" style="padding: 0 25px;">
+            <div style="font-size: 22px; font-weight: 700; color: #4a4a4a; margin-bottom: 20px; text-align: left;">
+                টুর্নামেন্ট অ্যাপ বিক্রি হচ্ছে
+            </div>
+            <div style="font-size: 15px; font-weight: 600; color: #4a4a4a; line-height: 1.5; margin-bottom: 25px; text-align: left;">
+                আমরা তৈরি করে দিচ্ছি আপনার নিজস্ব Android Tournament App এবং Website Tournament System।
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px;">
+                <div style="display: flex; align-items: center; gap: 10px; font-weight: 700; color: #333; font-size: 15px;">
+                    <i class="fas fa-check" style="color: #333; font-size: 16px;"></i> Automatic Payment System
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; font-weight: 700; color: #333; font-size: 15px;">
+                    <i class="fas fa-check" style="color: #333; font-size: 16px;"></i> Admin System
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; font-weight: 700; color: #333; font-size: 15px;">
+                    <i class="fas fa-check" style="color: #333; font-size: 16px;"></i> Moderator Panel
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; font-weight: 700; color: #333; font-size: 15px;">
+                    <i class="fas fa-check" style="color: #333; font-size: 16px;"></i> সম্পূর্ণ কাস্টম ডিজাইন
+                </div>
+            </div>
+            <div style="font-size: 16px; font-weight: 800; color: #333; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 20px;">💰</span> শুরু মাত্র ২৫,০০০ টাকা থেকে!
+            </div>
+            <a href="https://t.me/DV_IASAN" target="_blank" style="font-size: 16px; font-weight: 700; color: #673AB7; text-decoration: underline; display: block;">
+                https://t.me/DV_IASAN
+            </a>
+        </div>
+    </section>
+
+    <!-- TAB BAR -->
+    <div class="tab-bar hidden">
+        <div class="tab-item" onclick="window.showTab('shop')" id="nav-shop">
+            <div class="tab-icon-box"><img src="https://img.icons8.com/?size=100&id=x5pyLTwajYMT&format=png&color=000000"></div>
+            <span>Shop</span>
+        </div>
+        <div class="tab-item active" onclick="window.showTab('home')" id="nav-home">
+            <div class="tab-icon-box"><img src="https://img.icons8.com/?size=100&id=cdTzm4ndoVu4&format=png&color=000000"></div>
+            <span>Play</span>
+        </div>
+        <div class="tab-item" onclick="window.showTab('mymatches')" id="nav-mymatches">
+            <div class="tab-icon-box"><img src="https://img.icons8.com/?size=100&id=qbPAZjbNRPIS&format=png&color=000000"></div>
+            <span>Matches</span>
+        </div>
+        <div class="tab-item" onclick="window.showTab('result')" id="nav-result">
+            <div class="tab-icon-box"><img src="https://img.icons8.com/?size=100&id=MyHVj8kpSfdv&format=png&color=000000"></div>
+            <span>Result</span>
+        </div>
+        <div class="tab-item" onclick="window.showTab('profile')" id="nav-profile">
+            <div class="tab-icon-box"><img src="https://img.icons8.com/?size=100&id=xyyjPRvu3CUP&format=png&color=000000"></div>
+            <span>Profile</span>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+    <div id="startup-modal" class="modal">
+        <div class="startup-modal-box">
+            <div class="sm-header" style="font-weight:900; font-size:18px; margin-bottom:10px;">Important Notice ⚠️</div>
+            <div id="startup-popup-content" class="startup-content">Loading...</div>
+            <button class="startup-btn" onclick="document.getElementById('startup-modal').classList.remove('active')">Okay</button>
+        </div>
+    </div>
+
+    <div id="prize-modal" class="modal">
+        <div class="modal-box" style="overflow:visible;">
+            <div style="position:relative;">
+                <div class="popup-close-btn" onclick="document.getElementById('prize-modal').classList.remove('active')">X</div>
+            </div>
+            <div class="popup-header-yellow">
+                <div class="popup-title">TOTAL WINPRIZE</div>
+                <div class="popup-subtitle" id="prize-modal-subtitle">Match Name</div>
+            </div>
+            <div class="popup-content" id="prize-list-content"></div>
+        </div>
+    </div>
+
+    <div id="room-modal" class="modal">
+        <div class="modal-box" style="overflow:visible;">
+            <div style="position:relative;">
+                <div class="popup-close-btn" onclick="document.getElementById('room-modal').classList.remove('active')">X</div>
+            </div>
+            <div class="popup-header-yellow">
+                <div class="popup-title">ROOM DETAILS</div>
+                <div class="popup-subtitle">Match Room Information</div>
+            </div>
+            <div class="popup-content" style="text-align:center;">
+                <div style="margin-bottom:15px;">
+                    <span style="font-size:12px; color:#888;">Room ID</span><br>
+                    <span style="font-size:24px; font-weight:900; color:#333;" id="popup-room-id">--</span>
+                    <button class="am-copy-btn" style="margin:5px auto;" onclick="window.copyToClipboard('popup-room-id')">COPY</button>
+                </div>
+                <div>
+                    <span style="font-size:12px; color:#888;">Password</span><br>
+                    <span style="font-size:24px; font-weight:900; color:#333;" id="popup-room-pass">--</span>
+                    <button class="am-copy-btn" style="margin:5px auto;" onclick="window.copyToClipboard('popup-room-pass')">COPY</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="join-warning-modal" class="modal">
+        <div class="modal-box" style="text-align:center; padding:30px;">
+            <i class="fas fa-info-circle warning-popup-icon"></i>
+            <h3 style="margin-bottom:10px;">ম্যাচে জয়েন করুন</h3>
+            <p style="color:#666; font-size:14px; margin-bottom:20px;">আপনি এই ম্যাচে জয়েন করেননি</p>
+            <button class="warning-popup-btn" onclick="document.getElementById('join-warning-modal').classList.remove('active')">ঠিক আছে</button>
+        </div>
+    </div>
+
+    <!-- UID MODAL -->
+    <div id="uid-modal" class="modal">
+        <div class="modal-box" style="max-width:400px; padding:25px;">
+            <h3 style="text-align:center; margin-bottom:15px; color:#333;">💎 Enter UID</h3>
+            <p style="text-align:center; color:#888; font-size:13px; margin-bottom:15px;">Please enter your Free Fire UID to complete the purchase</p>
+            <input type="text" id="uid-modal-input" class="uid-modal-input" placeholder="Enter Free Fire UID">
+            <button class="auth-black-btn" style="margin-top:15px;" onclick="window.confirmUidPurchase()">Confirm Purchase</button>
+            <button class="auth-black-btn" style="background:#666; margin-top:5px;" onclick="document.getElementById('uid-modal').classList.remove('active')">Cancel</button>
+        </div>
+    </div>
+
+</main>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue, push, update, get, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyBAczPEplTap4RxtMM4nSRPDqsmB9LxRk4",
+  authDomain: "gamebe-fce26.firebaseapp.com",
+  projectId: "gamebe-fce26",
+  storageBucket: "gamebe-fce26.firebasestorage.app",
+  messagingSenderId: "472343917981",
+  appId: "1:472343917981:web:f971a53984459e539a6b74"
+};
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+
+    // ===== STATE =====
+    let currentUser = null;
+    let depositBal = 0, winningBal = 0;
+    let activeCategories = {};
+    let rawMatches = [];
+    let currentActiveCategory = null;
+    let userJoinedMatches = [];
+    let currentJoinId = null, currentEntryFee = 0;
+    let currentMatchFilter = 'Upcoming';
+    let allParticipants = {};
+    let currentJoinCategory = null;
+    let videoLinks = { addMoney:'', getRoom:'', howPlay:'' };
+    let supportLink = "", shopLink = "";
+    let currentPayMethod = 'bkash';
+    let topUpPackages = [];
+    let showParticipants = true;
+    let selectedPackageId = null;
+    let selectedPackagePrice = 0;
+    let lastActiveTab = 'home';
+
+    // ===== EXPOSE FUNCTIONS =====
+    window.emailLogin = emailLogin;
+    window.emailRegister = emailRegister;
+    window.handleLogout = handleLogout;
+    window.toggleAuthMode = toggleAuthMode;
+    window.copyToClipboard = copyToClipboard;
+    window.openVideo = openVideo;
+    window.openSupport = openSupport;
+    window.switchPayTab = switchPayTab;
+    window.submitWithdraw = submitWithdraw;
+    window.saveProfile = saveProfile;
+    window.confirmJoin = confirmJoin;
+    window.prepJoin = prepJoin;
+    window.checkRoom = checkRoom;
+    window.openPrizePool = openPrizePool;
+    window.showTab = showTab;
+    window.navigateSub = navigateSub;
+    window.openCategory = openCategory;
+    window.filterMatchTab = filterMatchTab;
+    window.selectWithdrawMethod = selectWithdrawMethod;
+    window.openShopLink = openShopLink;
+    window.triggerVerify = triggerVerify;
+    window.openMatchDetails = openMatchDetails;
+    window.openResultDetails = openResultDetails;
+    window.closeJoinPage = closeJoinPage;
+    window.buyTopUp = buyTopUp;
+    window.confirmUidPurchase = confirmUidPurchase;
+    window.toggleRulesContent = toggleRulesContent;
+    window.goBackFromMatches = goBackFromMatches;
+    window.goBackFromMatchDetails = goBackFromMatchDetails;
+    window.goBackFromResultDetails = goBackFromResultDetails;
+    window.goBackFromJoin = goBackFromJoin;
+
+    // ===== LOADER =====
+    function toggleLoader(show) {
+        const l = document.getElementById('global-loader');
+        if(show) l.classList.add('active'); else l.classList.remove('active');
+    }
+
+    // ===== BACK NAVIGATION FIXES =====
+    function goBackFromMatches() {
+        // Go back to home
+        document.querySelectorAll('.app-section').forEach(e => e.classList.remove('active'));
+        document.body.classList.remove('sub-page');
+        document.querySelector('.tab-bar').classList.remove('hidden');
+        document.getElementById('tab-home-view').classList.add('active');
+        document.querySelectorAll('.tab-item').forEach(e => e.classList.remove('active'));
+        document.getElementById('nav-home').classList.add('active');
+        currentActiveCategory = null;
+    }
+
+    function goBackFromMatchDetails() {
+        // Go back to my matches
+        document.querySelectorAll('.app-section').forEach(e => e.classList.remove('active'));
+        document.body.classList.remove('sub-page');
+        document.querySelector('.tab-bar').classList.remove('hidden');
+        document.getElementById('tab-mymatches-view').classList.add('active');
+        document.querySelectorAll('.tab-item').forEach(e => e.classList.remove('active'));
+        document.getElementById('nav-mymatches').classList.add('active');
+    }
+
+    function goBackFromResultDetails() {
+        // Go back to results tab
+        document.querySelectorAll('.app-section').forEach(e => e.classList.remove('active'));
+        document.body.classList.remove('sub-page');
+        document.querySelector('.tab-bar').classList.remove('hidden');
+        document.getElementById('tab-result-view').classList.add('active');
+        document.querySelectorAll('.tab-item').forEach(e => e.classList.remove('active'));
+        document.getElementById('nav-result').classList.add('active');
+    }
+
+    function goBackFromJoin() {
+        // Go back to matches view with current category
+        document.getElementById('join-match-view').classList.remove('active');
+        if(currentActiveCategory) {
+            document.getElementById('matches-view').classList.add('active');
+            document.body.classList.add('sub-page');
+            document.querySelector('.tab-bar').classList.add('hidden');
+        } else {
+            document.body.classList.remove('sub-page');
+            document.querySelector('.tab-bar').classList.remove('hidden');
+            document.getElementById('tab-home-view').classList.add('active');
+        }
+    }
+
+    // ===== INIT =====
+    window.onload = function() {
+        initData();
+    };
+
+    function initData() {
+        // Categories
+        onValue(ref(db, 'categories'), s => {
+            const d = s.val();
+            if(d) {
+                activeCategories = d;
+                const c = document.getElementById('dynamic-category-list');
+                c.innerHTML = "";
+                Object.entries(d).forEach(([k,v]) => {
+                    c.innerHTML += `
+                    <div class="cat-card-new" onclick="window.openCategory('${k}')">
+                        <img src="${v.img}" class="cat-card-img">
+                        <div class="cat-card-info">
+                            <div class="cat-card-title">${v.name}</div>
+                            <div class="cat-card-count" id="count-${k}">0 matches found</div>
+                        </div>
+                    </div>`;
+                });
+                updateCounts();
+                renderRulesPage();
+            }
+        });
+
+        // Matches
+        onValue(ref(db, 'matches'), s => {
+            rawMatches = [];
+            const d = s.val();
+            if(d) Object.entries(d).forEach(([k,v]) => {
+                rawMatches.push({dbKey:k, ...v});
+            });
+            updateCounts();
+            
+            if(document.getElementById('matches-view').classList.contains('active')) {
+                filterMatchTab(currentMatchFilter);
+            }
+            if(document.getElementById('tab-mymatches-view').classList.contains('active')) {
+                loadMyMatches();
+            }
+            loadResults();
+            loadLeaderboard();
+        });
+
+        // Participants
+        onValue(ref(db, 'match_participants'), s => {
+            allParticipants = s.val() || {};
+            calculateJoinedMatches();
+        });
+        
+        // Settings
+        onValue(ref(db, 'app_settings'), s => {
+            const d = s.val();
+            if(d) {
+                if(d.app_name) document.getElementById('splash-app-name').innerText = d.app_name;
+                if(d.app_logo) document.getElementById('splash-logo').src = d.app_logo;
+                if(d.notice) {
+                    document.getElementById('dynamic-notice').innerText = d.notice;
+                }
+                if(d.bkash_number) document.getElementById('bkash-num-display').innerText = d.bkash_number;
+                if(d.nagad_number) document.getElementById('nagad-num-display').innerText = d.nagad_number;
+                if(d.rocket_number) document.getElementById('rocket-num-display').innerText = d.rocket_number;
+                
+                videoLinks.addMoney = d.how_to_add_money_link || '';
+                videoLinks.getRoom = d.how_to_get_room_id_link || '';
+                videoLinks.howPlay = d.how_to_play_link || '';
+                supportLink = d.support_link || '';
+                shopLink = d.shop_link || '';
+
+                // Participants view toggle
+                if(d.show_participants !== undefined) {
+                    showParticipants = d.show_participants;
+                }
+
+                if(d.show_popup && d.popup_text) {
+                    document.getElementById('startup-popup-content').innerHTML = d.popup_text.replace(/\n/g, '<br>');
+                    setTimeout(() => { document.getElementById('startup-modal').classList.add('active'); }, 1500);
+                }
+
+                if(d.banners) {
+                    const w = document.getElementById('banner-slider-wrapper');
+                    const dots = document.getElementById('slider-dots');
+                    w.innerHTML = ""; dots.innerHTML = "";
+                    const banners = Object.values(d.banners);
+                    if(banners.length > 0) {
+                        banners.forEach((b, i) => {
+                            let clickAttr = b.link ? `onclick="window.open('${b.link}', '_blank')"` : "";
+                            w.innerHTML += `<div class="slide" ${clickAttr}><img src="${b.img}"><div class="slide-overlay"><h3>${b.title || ''}</h3><p>${b.subtitle || ''}</p></div></div>`;
+                            dots.innerHTML += `<div class="dot ${i===0?'active':''}"></div>`;
+                        });
+                        initSlider();
+                    }
+                }
+            }
+            setTimeout(() => {
+                const splash = document.getElementById('app-splash');
+                if(splash) {
+                    splash.style.opacity = '0';
+                    setTimeout(() => splash.style.display = 'none', 500);
+                }
+            }, 3000);
+        });
+
+        // Top-Up Packages
+        onValue(ref(db, 'topup_packages'), s => {
+            const d = s.val();
+            if(d) {
+                topUpPackages = Object.entries(d).map(([k,v]) => ({id:k, ...v}));
+                renderShopPackages();
+            } else {
+                topUpPackages = [];
+                renderShopPackages();
+            }
+        });
+
+        startTimers();
+    }
+
+    // ===== RENDER RULES PAGE =====
+    function renderRulesPage() {
+        const list = document.getElementById('rules-category-list');
+        if(!list) return;
+        list.innerHTML = "";
+        const categories = Object.entries(activeCategories);
+        if(categories.length === 0) {
+            list.innerHTML = "<div style='text-align:center; padding:40px; color:#999;'>No categories with rules</div>";
+            return;
+        }
+        categories.forEach(([key, cat]) => {
+            const hasRules = cat.rules && cat.rules.trim();
+            list.innerHTML += `
+            <div class="rules-category-item" onclick="window.toggleRulesContent(this)">
+                <div class="rc-header">
+                    <img src="${cat.img || 'https://via.placeholder.com/40'}" alt="${cat.name}">
+                    <span class="rc-name">${cat.name}</span>
+                    <i class="fas fa-chevron-down rc-arrow"></i>
+                </div>
+                <div class="rc-content">
+                    ${hasRules ? `<ul>${cat.rules.split('\n').filter(r => r.trim()).map(r => `<li>${r}</li>`).join('')}</ul>` : '<div style="color:#999; font-size:13px; padding:8px 0;">No rules defined for this category</div>'}
+                </div>
+            </div>`;
+        });
+    }
+
+    // ===== TOGGLE RULES CONTENT =====
+    function toggleRulesContent(el) {
+        const content = el.querySelector('.rc-content');
+        const arrow = el.querySelector('.rc-arrow');
+        if(content.classList.contains('open')) {
+            content.classList.remove('open');
+            arrow.style.transform = 'rotate(0deg)';
+        } else {
+            content.classList.add('open');
+            arrow.style.transform = 'rotate(180deg)';
+        }
+    }
+
+    // ===== RENDER SHOP PACKAGES =====
+    function renderShopPackages() {
+        const grid = document.getElementById('shop-package-grid');
+        grid.innerHTML = "";
+        if(topUpPackages.length === 0) {
+            grid.innerHTML = "<div style='grid-column:1/-1; text-align:center; color:#999; padding:20px;'>No packages available</div>";
+            return;
+        }
+        topUpPackages.forEach(pkg => {
+            grid.innerHTML += `
+            <div class="shop-package-card">
+                <div class="shop-package-icon">💎</div>
+                <div class="shop-package-name">${pkg.name}</div>
+                <div class="shop-package-price">৳${pkg.price}</div>
+                <button class="shop-package-btn" onclick="window.buyTopUp('${pkg.id}', ${pkg.price})">Buy Now</button>
+            </div>`;
+        });
+    }
+
+    // ===== BUY TOP-UP - Show UID Modal =====
+    function buyTopUp(packageId, price) {
+        if(!currentUser) {
+            Swal.fire('Error', 'Please login first', 'error');
+            return;
+        }
+
+        if(winningBal < price) {
+            Swal.fire('Error', 'Insufficient Winning Balance!', 'error');
+            return;
+        }
+
+        selectedPackageId = packageId;
+        selectedPackagePrice = price;
+        document.getElementById('uid-modal-input').value = '';
+        document.getElementById('uid-modal').classList.add('active');
+    }
+
+    // ===== CONFIRM UID PURCHASE =====
+    async function confirmUidPurchase() {
+        const uid = document.getElementById('uid-modal-input').value.trim();
+        if(!uid || uid.length < 5) {
+            Swal.fire('Error', 'Please enter a valid Free Fire UID', 'error');
+            return;
+        }
+
+        const packageId = selectedPackageId;
+        const price = selectedPackagePrice;
+
+        document.getElementById('uid-modal').classList.remove('active');
+
+        const result = await Swal.fire({
+            title: 'Confirm Purchase',
+            html: `
+                <div style="text-align:left; padding:10px 0;">
+                    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee;">
+                        <span style="color:#888;">Package:</span>
+                        <span style="font-weight:700;">${topUpPackages.find(p => p.id === packageId)?.name || 'Package'}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee;">
+                        <span style="color:#888;">Price:</span>
+                        <span style="font-weight:700; color:var(--primary);">৳${price}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee;">
+                        <span style="color:#888;">FF UID:</span>
+                        <span style="font-weight:700;">${uid}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; padding:8px 0;">
+                        <span style="color:#888;">Balance after:</span>
+                        <span style="font-weight:700; color:var(--success);">৳${winningBal - price}</span>
+                    </div>
+                </div>
+            `,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#6C63FF',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Buy'
+        });
+
+        if(result.isConfirmed) {
+            toggleLoader(true);
+            try {
+                const newWinning = winningBal - price;
+                await update(ref(db, 'users/'+currentUser.uid), { winning: newWinning });
+
+                const orderId = push(ref(db, 'topup_orders')).key;
+                await set(ref(db, 'topup_orders/'+orderId), {
+                    userId: currentUser.uid,
+                    userName: currentUser.displayName || 'Unknown',
+                    userEmail: currentUser.email,
+                    packageId: packageId,
+                    packageName: topUpPackages.find(p => p.id === packageId)?.name || 'Package',
+                    amount: price,
+                    uid: uid,
+                    status: 'pending',
+                    timestamp: new Date().toLocaleString(),
+                    createdAt: serverTimestamp()
+                });
+
+                const txId = push(ref(db, 'transactions/'+currentUser.uid)).key;
+                await set(ref(db, 'transactions/'+currentUser.uid+'/'+txId), {
+                    type: 'Top-Up Order',
+                    amount: price,
+                    uid: uid,
+                    status: 'Pending',
+                    date: new Date().toLocaleString(),
+                    orderId: orderId
+                });
+
+                toggleLoader(false);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Order Placed!',
+                    text: 'Your order has been sent to admin for approval.',
+                    confirmButtonText: 'OK'
+                });
+
+            } catch(error) {
+                toggleLoader(false);
+                Swal.fire('Error', error.message, 'error');
+            }
+        }
+    }
+
+    function updateCounts() {
+        Object.keys(activeCategories).forEach(k => {
+            const n = rawMatches.filter(m => m.categoryId === k && m.status !== 'Finished').length;
+            const el = document.getElementById(`count-${k}`);
+            if(el) el.innerText = `${n} matches found`;
+        });
+    }
+
+    function calculateJoinedMatches() {
+        userJoinedMatches = [];
+        if(allParticipants && currentUser) {
+            Object.keys(allParticipants).forEach(matchKey => {
+                const parts = Object.values(allParticipants[matchKey]);
+                if(parts.some(p => p.joinedBy === currentUser.uid)) {
+                    userJoinedMatches.push(matchKey);
+                }
+            });
+        }
+        
+        if(document.getElementById('matches-view').classList.contains('active')) {
+            filterMatchTab(currentMatchFilter);
+        }
+        if(document.getElementById('tab-mymatches-view').classList.contains('active')) {
+            loadMyMatches();
+        }
+    }
+
+    let slideIndex = 0;
+    let slideInterval;
+    function initSlider() {
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+        if(slides.length === 0) return;
+        if(slideInterval) clearInterval(slideInterval);
+        slideInterval = setInterval(() => {
+            slideIndex = (slideIndex + 1) % slides.length;
+            document.getElementById('banner-slider-wrapper').style.transform = `translateX(-${slideIndex * 100}%)`;
+            dots.forEach(d => d.classList.remove('active'));
+            if(dots[slideIndex]) dots[slideIndex].classList.add('active');
+        }, 4000);
+    }
+
+    function startTimers() {
+        setInterval(() => {
+            document.querySelectorAll('.match-countdown').forEach(e => {
+                const t = parseInt(e.dataset.time);
+                if(!t) return;
+                const diff = t - new Date().getTime();
+                if(diff < 0) {
+                    e.innerText = "⏰ Match Started";
+                } else {
+                    const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const s = Math.floor((diff % (1000 * 60)) / 1000);
+                    e.innerText = `⏱️ Starts In: ${h}h ${m}m ${s}s`;
+                }
+            });
+        }, 1000);
+    }
+
+    // ===== AUTH =====
+    function toggleAuthMode(mode) {
+        if(mode === 'login') {
+            document.getElementById('login-container').style.display = 'flex';
+            document.getElementById('register-container').style.display = 'none';
+        } else {
+            document.getElementById('login-container').style.display = 'none';
+            document.getElementById('register-container').style.display = 'flex';
+        }
+    }
+
+    async function emailLogin() {
+        const e = document.getElementById('login-email').value;
+        const p = document.getElementById('login-pass').value;
+        if(!e || !p) return Swal.fire('Error', "Please fill all fields", 'error');
+        toggleLoader(true);
+        try {
+            await signInWithEmailAndPassword(auth, e, p);
+            toggleLoader(false);
+        } catch(err) {
+            toggleLoader(false);
+            Swal.fire('Error', err.message, 'error');
+        }
+    }
+
+    async function emailRegister() {
+        const n = document.getElementById('reg-username').value;
+        const e = document.getElementById('reg-email').value;
+        const ph = document.getElementById('reg-phone').value;
+        const p = document.getElementById('reg-pass').value;
+        if(!n || !e || !ph || !p) return Swal.fire('Error', "Please fill all fields", 'error');
+
+        toggleLoader(true);
+        try {
+            const cred = await createUserWithEmailAndPassword(auth, e, p);
+            await updateProfile(cred.user, {displayName: n});
+            await set(ref(db, 'users/'+cred.user.uid), {
+                username: n,
+                email: e,
+                phone: ph,
+                deposit: 0,
+                winning: 0,
+                createdAt: serverTimestamp()
+            });
+            toggleLoader(false);
+        } catch(err) {
+            toggleLoader(false);
+            Swal.fire('Error', err.message, 'error');
+        }
+    }
+
+    function handleLogout() {
+        Swal.fire({
+            title: 'Logout?',
+            text: "Are you sure you want to logout?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                signOut(auth);
+            }
+        });
+    }
+
+    // ===== AUTH STATE =====
+    onAuthStateChanged(auth, u => {
+        if(u) {
+            currentUser = u;
+            document.getElementById('profile-name').innerText = u.displayName || 'User';
+            document.getElementById('profile-email').innerText = u.email;
+            
+            document.getElementById('ep-name-display').innerText = u.displayName || 'User';
+            document.getElementById('ep-email-display').innerText = u.email;
+            document.getElementById('ep-username').value = u.displayName || '';
+            document.getElementById('ep-email').value = u.email;
+
+            if(u.photoURL) document.getElementById('profile-avatar').src = u.photoURL;
+            document.getElementById('profile-logout-btn').classList.remove('hidden');
+            
+            document.getElementById('auth-view').classList.remove('active');
+            document.getElementById('main-content').style.display = 'block';
+            document.querySelector('.tab-bar').classList.remove('hidden');
+            showTab('home');
+            
+            calculateJoinedMatches();
+            
+            onValue(ref(db, 'users/'+u.uid), s => {
+                const d = s.val();
+                if(d) {
+                    depositBal = d.deposit || 0;
+                    winningBal = d.winning || 0;
+                    document.getElementById('profile-bal-dep').innerText = depositBal;
+                    document.getElementById('profile-bal-win').innerText = winningBal;
+                    document.getElementById('wallet-balance-display').innerText = (depositBal+winningBal);
+                    document.getElementById('withdraw-available').innerText = winningBal;
+                    document.getElementById('shop-balance').innerText = winningBal;
+                    if(d.phone) document.getElementById('ep-phone').value = d.phone;
+                }
+            });
+        } else {
+            currentUser = null;
+            userJoinedMatches = [];
+            document.getElementById('main-content').style.display = 'none';
+            document.querySelector('.tab-bar').classList.add('hidden');
+            document.getElementById('auth-view').classList.add('active');
+            toggleAuthMode('login');
+        }
+    });
+
+    // ===== NAVIGATION =====
+    function showTab(t) {
+        toggleLoader(true);
+        document.querySelectorAll('.tab-item').forEach(e => e.classList.remove('active'));
+        const navEl = document.getElementById(`nav-${t}`);
+        if(navEl) navEl.classList.add('active');
+        
+        setTimeout(() => {
+            document.querySelectorAll('.app-section').forEach(e => e.classList.remove('active'));
+            const target = document.getElementById(`tab-${t}-view`);
+            if(target) target.classList.add('active');
+            
+            if(['shop', 'home', 'mymatches', 'result', 'profile'].includes(t)) {
+                document.body.classList.remove('sub-page');
+                document.querySelector('.tab-bar').classList.remove('hidden');
+            }
+            if(t === 'mymatches') loadMyMatches();
+            if(t === 'result') loadResults();
+            if(t === 'shop') renderShopPackages();
+            if(t === 'profile') renderRulesPage();
+            toggleLoader(false);
+        }, 500);
+    }
+
+    function navigateSub(t) {
+        toggleLoader(true);
+        setTimeout(() => {
+            document.querySelectorAll('.app-section').forEach(e => e.classList.remove('active'));
+            document.body.classList.add('sub-page');
+            document.querySelector('.tab-bar').classList.add('hidden');
+            
+            const map = {
+                'wallet': 'wallet-view',
+                'add-money': 'add-money-view',
+                'withdraw': 'withdraw-view',
+                'history': 'history-view',
+                'notifications': 'notifications-view',
+                'edit-profile': 'edit-profile-view',
+                'developer': 'developer-view',
+                'leaderboard': 'leaderboard-view',
+                'rules': 'rules-view'
+            };
+            const targetId = map[t];
+            if(targetId) {
+                const el = document.getElementById(targetId);
+                if(el) el.classList.add('active');
+            }
+            
+            if(t === 'wallet' && currentUser) {
+                document.getElementById('withdraw-available-wallet').innerText = winningBal;
+                document.getElementById('deposit-available-wallet').innerText = depositBal;
+            } else if(t === 'withdraw' && currentUser) {
+                document.getElementById('withdraw-available').innerText = winningBal;
+            } else if(t === 'history') loadHistory();
+            else if(t === 'notifications') loadNotifs();
+            else if(t === 'leaderboard') loadLeaderboard();
+            else if(t === 'edit-profile' && currentUser) {
+                document.getElementById('ep-username').value = currentUser.displayName || '';
+                document.getElementById('ep-email').value = currentUser.email || '';
+            } else if(t === 'rules') renderRulesPage();
+            toggleLoader(false);
+        }, 500);
+    }
+
+    // ===== LEADERBOARD - Only 20 Users =====
+    function loadLeaderboard() {
+        const list = document.getElementById('leaderboard-list');
+        if(!list) return;
+        
+        onValue(ref(db, 'users'), s => {
+            list.innerHTML = "";
+            const d = s.val();
+            if(!d) {
+                list.innerHTML = "<div class='empty-msg'>No users found</div>";
+                return;
+            }
+            
+            const users = Object.entries(d).map(([k,v]) => ({
+                uid: k,
+                ...v
+            })).sort((a, b) => (b.winning || 0) - (a.winning || 0));
+            
+            if(users.length === 0) {
+                list.innerHTML = "<div class='empty-msg'>No users found</div>";
+                return;
+            }
+            
+            // Only show top 20 users
+            const topUsers = users.slice(0, 20);
+            
+            topUsers.forEach((u, idx) => {
+                const rank = idx + 1;
+                let rankClass = '';
+                if(rank === 1) rankClass = 'top1';
+                else if(rank === 2) rankClass = 'top2';
+                else if(rank === 3) rankClass = 'top3';
+                
+                const initial = (u.username || 'U').charAt(0).toUpperCase();
+                
+                list.innerHTML += `
+                <div class="lb-item">
+                    <div class="lb-rank ${rankClass}">#${rank}</div>
+                    <div class="lb-avatar">${initial}</div>
+                    <div class="lb-info">
+                        <div class="lb-name">${u.username || 'Unknown'}</div>
+                    </div>
+                    <div class="lb-amount">৳${u.winning || 0}</div>
+                </div>
+                `;
+            });
+            
+            if(users.length > 20) {
+                list.innerHTML += `<div class="lb-more">Showing top 20 players out of ${users.length}</div>`;
+            }
+        });
+    }
+
+    // ===== CATEGORY =====
+    function openCategory(cid) {
+        currentActiveCategory = cid;
+        document.querySelectorAll('.app-section').forEach(e => e.classList.remove('active'));
+        document.getElementById('matches-view').classList.add('active');
+        document.body.classList.add('sub-page');
+        document.querySelector('.tab-bar').classList.add('hidden');
+        filterMatchTab('Upcoming');
+    }
+
+    // ===== MATCH FILTER =====
+    function filterMatchTab(status) {
+        currentMatchFilter = status;
+        document.querySelectorAll('.m-tab').forEach(e => e.classList.remove('active'));
+        const tab = document.getElementById('mt-'+status);
+        if(tab) tab.classList.add('active');
+        
+        const c = document.getElementById('matches-container');
+        if(!c) return;
+        c.innerHTML = "";
+        
+        let m = rawMatches.filter(x => x.categoryId === currentActiveCategory);
+        if(status === 'Upcoming') m = m.filter(x => x.status === 'Upcoming');
+        else if(status === 'Ongoing') m = m.filter(x => x.status === 'Ongoing');
+        else if(status === 'Finished') m = m.filter(x => x.status === 'Finished');
+        
+        if(m.length === 0) {
+            c.innerHTML = `<div class='empty-msg'>No ${status} Matches Found</div>`;
+        } else {
+            m.forEach(x => c.innerHTML += createMatchCardHTML(x, (status === 'Finished' ? 'result' : 'play')));
+        }
+    }
+
+    // ===== MATCH CARD =====
+    function createMatchCardHTML(m, type) {
+        const joined = m.joined || 0;
+        const total = m.total || 48;
+        const perc = Math.min((joined/total)*100, 100);
+        const isJoined = userJoinedMatches.includes(m.dbKey);
+        const catImg = activeCategories[m.categoryId] ? activeCategories[m.categoryId].img : '';
+        
+        let btnJoinHTML = '';
+        if(type === 'play') {
+            if(isJoined) {
+                btnJoinHTML = `<button class="btn-join-main disabled">✅ JOINED</button>`;
+            } else {
+                btnJoinHTML = `<button class="btn-join-main" onclick="event.stopPropagation(); window.prepJoin('${m.dbKey}', '${m.type}', ${m.entry}, '${m.dbKey}', '${m.title}')">Join</button>`;
+            }
+        } else if(type === 'joined') {
+            btnJoinHTML = `<button class="btn-join-main disabled">✅ JOINED</button>`;
+        } else {
+            btnJoinHTML = `<button class="btn-join-main" onclick="event.stopPropagation(); window.openResultDetails('${m.dbKey}')">📊 Result</button>`;
+        }
+
+        // For result type, make the card non-clickable
+        const clickHandler = type === 'result' ? '' : `onclick="window.openMatchDetails('${m.dbKey}')"`;
+        const cardClass = type === 'result' ? 'match-card result-card' : 'match-card play-card';
+
+        return `
+        <div class="${cardClass}" ${clickHandler}>
+            <div class="mc-header">
+                <img src="${catImg}" class="mc-thumb">
+                <div class="mc-header-info">
+                    <div class="mc-title-row">${m.title}</div>
+                    <div class="mc-date-row">${m.time}</div>
+                    <div class="mc-badge-row">
+                        <span class="mc-badge">${m.type}</span>
+                        <span class="mc-badge">${m.map}</span>
+                        <span class="mc-badge">MOBILE</span>
+                    </div>
+                </div>
+            </div>
+            <div class="mc-stats-grid">
+                <div class="mc-stat-box">
+                    <div class="mc-stat-label">WIN PRIZE</div>
+                    <div class="mc-stat-value">${m.total_prize} TK</div>
+                </div>
+                <div class="mc-stat-box">
+                    <div class="mc-stat-label">PER KILL</div>
+                    <div class="mc-stat-value">${m.per_kill} TK</div>
+                </div>
+                <div class="mc-stat-box">
+                    <div class="mc-stat-label">ENTRY FEE</div>
+                    <div class="mc-stat-value">${m.entry} TK</div>
+                </div>
+            </div>
+            ${type !== 'result' ? `
+            <div class="mc-join-row">
+                <div class="mc-progress-wrapper">
+                    <div class="mc-prog-bar"><div class="mc-prog-fill" style="width:${perc}%"></div></div>
+                    <div class="mc-spots-info">
+                        <span>${Math.max(0, total-joined)} spots left</span>
+                        <span>${joined}/${total}</span>
+                    </div>
+                </div>
+                ${btnJoinHTML}
+            </div>
+            ` : ''}
+            <div class="mc-details-row">
+                ${type !== 'result' ? `
+                <div class="btn-details" onclick="event.stopPropagation(); window.checkRoom('${m.dbKey}')">
+                    <i class="fas fa-key"></i> Room Details
+                </div>
+                <div class="btn-details" onclick="event.stopPropagation(); window.openPrizePool('${m.dbKey}')">
+                    <i class="fas fa-trophy"></i> Prize Details
+                </div>` : `
+                <div style="width:100%; text-align:center; color:#999; font-size:12px; padding:5px 0;">
+                    <i class="fas fa-check-circle" style="color:var(--success);"></i> Match Completed
+                </div>`}
+            </div>
+            ${type !== 'result' ? `
+            <div class="mc-footer-timer match-countdown" data-time="${m.timestamp}">
+                <i class="far fa-clock"></i> STARTS IN - Loading...
+            </div>` : ''}
+        </div>`;
+    }
+
+    // ===== MY MATCHES =====
+    function loadMyMatches() {
+        const c = document.getElementById('mymatches-container');
+        if(!c) return;
+        c.innerHTML = "";
+        if(!currentUser) {
+            c.innerHTML = "<div class='empty-msg'>Login to see matches</div>";
+            return;
+        }
+        
+        const m = rawMatches.filter(x => userJoinedMatches.includes(x.dbKey));
+        if(m.length === 0) {
+            c.innerHTML = "<div class='empty-msg'>No joined matches</div>";
+        } else {
+            m.forEach(x => c.innerHTML += createMatchCardHTML(x, 'joined'));
+        }
+    }
+
+    // ===== RESULTS - Read Only =====
+    function loadResults() {
+        const c = document.getElementById('result-container');
+        if(!c) return;
+        c.innerHTML = "";
+        const m = rawMatches.filter(x => x.status === 'Finished');
+        if(m.length === 0) {
+            c.innerHTML = "<div class='empty-msg'>No results yet</div>";
+        } else {
+            m.forEach(x => c.innerHTML += createMatchCardHTML(x, 'result'));
+        }
+    }
+
+    // ===== MATCH DETAILS =====
+    function openMatchDetails(key) {
+        const m = rawMatches.find(x => x.dbKey === key);
+        if(!m) return;
+        
+        toggleLoader(true);
+        setTimeout(() => {
+            document.querySelectorAll('.app-section').forEach(e => e.classList.remove('active'));
+            document.body.classList.add('sub-page');
+            document.querySelector('.tab-bar').classList.add('hidden');
+            document.getElementById('match-details-view').classList.add('active');
+
+            document.getElementById('md-title').innerText = m.title;
+            const timerEl = document.getElementById('md-timer');
+            timerEl.dataset.time = m.timestamp;
+            document.getElementById('md-time').innerText = "Starts In: " + m.time;
+            
+            const pList = document.getElementById('md-p-list');
+            pList.innerHTML = "";
+            let parts = [];
+            if(allParticipants[key]) {
+                parts = Object.values(allParticipants[key]);
+            }
+            document.getElementById('md-count').innerText = `${parts.length}/${m.total || 48}`;
+            
+            if(!showParticipants) {
+                pList.innerHTML = `<div style="text-align:center; padding:20px; color:#999;">Participants list is hidden by admin</div>`;
+            } else if(parts.length === 0) {
+                pList.innerHTML = `<div style="text-align:center; padding:20px; color:#999;">No participants yet</div>`;
+            } else {
+                parts.forEach((p, idx) => {
+                    pList.innerHTML += `
+                    <div class="md-p-row">
+                        <div style="width:10%">${idx+1}</div>
+                        <div style="width:50%">${p.ign || 'Unknown'}</div>
+                        <div style="width:20%; text-align:center;">${p.kills || 0}</div>
+                        <div style="width:20%; text-align:right;">${p.win || 0}</div>
+                    </div>`;
+                });
+            }
+            toggleLoader(false);
+        }, 500);
+    }
+
+    // ===== RESULT DETAILS - Read Only =====
+    function openResultDetails(key) {
+        const m = rawMatches.find(x => x.dbKey === key);
+        if(!m) return;
+        
+        toggleLoader(true);
+        setTimeout(() => {
+            document.querySelectorAll('.app-section').forEach(e => e.classList.remove('active'));
+            document.body.classList.add('sub-page');
+            document.querySelector('.tab-bar').classList.add('hidden');
+            document.getElementById('result-details-view').classList.add('active');
+            
+            const c = document.getElementById('rd-container');
+            let parts = [];
+            if(allParticipants[key]) {
+                parts = Object.values(allParticipants[key]).sort((a,b) => (b.win || 0) - (a.win || 0));
+            }
+            
+            let winnersHTML = '';
+            let fullHTML = '';
+            parts.forEach((p, idx) => {
+                const row = `
+                <div class="rd-row">
+                    <div class="col-hash">${idx+1}</div>
+                    <div class="col-name">${p.ign || 'Unknown'}</div>
+                    <div class="col-kill">${p.kills || 0}</div>
+                    <div class="col-win">৳${p.win || 0}</div>
+                </div>`;
+                if(p.win > 0) winnersHTML += row;
+                fullHTML += row;
+            });
+
+            if(!winnersHTML) winnersHTML = '<div style="padding:10px; text-align:center; color:#777;">No winners declared yet</div>';
+            if(!fullHTML) fullHTML = '<div style="padding:10px; text-align:center; color:#777;">No participants</div>';
+
+            c.innerHTML = `
+            <div class="rd-card">
+                <div class="rd-title-box">
+                    <div class="rd-main-title">${m.title}</div>
+                    <div class="rd-sub-title">${m.time}</div>
+                </div>
+                <div class="rd-stats-row">
+                    <div class="rd-stat-item">
+                        <div>WIN PRIZE</div>
+                        <div>৳${m.total_prize}</div>
+                    </div>
+                    <div class="rd-stat-item">
+                        <div>PER KILL</div>
+                        <div>৳${m.per_kill}</div>
+                    </div>
+                    <div class="rd-stat-item">
+                        <div>ENTRY FEE</div>
+                        <div>৳${m.entry}</div>
+                    </div>
+                </div>
+                <div class="rd-header-blue">🏆 WINNER WINNER CHICKEN DINNER</div>
+                <div class="rd-table-head">
+                    <div class="col-hash">#</div>
+                    <div class="col-name">Player Name</div>
+                    <div class="col-kill">Kills</div>
+                    <div class="col-win">Winning</div>
+                </div>
+                ${winnersHTML}
+                <div class="rd-header-blue" style="margin-top:10px;">📊 FULL RESULT</div>
+                <div class="rd-table-head">
+                    <div class="col-hash">#</div>
+                    <div class="col-name">Player Name</div>
+                    <div class="col-kill">Kills</div>
+                    <div class="col-win">Winning</div>
+                </div>
+                ${fullHTML}
+            </div>`;
+            toggleLoader(false);
+        }, 500);
+    }
+
+    // ===== PREP JOIN =====
+    function prepJoin(id, type, fee, key, title) {
+        if(!currentUser) return;
+        if(userJoinedMatches.includes(id)) {
+            Swal.fire({ icon:'warning', title:'Already Joined', text:'You have already joined this match!' });
+            return;
+        }
+        
+        const match = rawMatches.find(x => x.dbKey === id);
+        if(match) {
+            const joined = match.joined || 0;
+            const total = match.total || 48;
+            if(joined >= total) {
+                Swal.fire({ icon:'error', title:'Match Full', text:'This match is already full!' });
+                return;
+            }
+        }
+        
+        currentJoinId = id;
+        currentEntryFee = fee;
+        
+        if(match && match.categoryId && activeCategories[match.categoryId]) {
+            currentJoinCategory = match.categoryId;
+            const rules = activeCategories[match.categoryId].rules || '';
+            const rulesContainer = document.getElementById('join-rules-container');
+            const rulesList = document.getElementById('join-rules-list');
+            
+            if(rules) {
+                rulesContainer.style.display = 'block';
+                const ruleLines = rules.split('\n').filter(r => r.trim());
+                rulesList.innerHTML = ruleLines.map(r => `<li>${r}</li>`).join('');
+            } else {
+                rulesContainer.style.display = 'none';
+            }
+        }
+        
+        document.getElementById('join-page-title').innerText = title || "Match Joining";
+        document.getElementById('join-page-meta').innerText = match ? match.time : new Date().toLocaleDateString();
+        document.getElementById('join-page-win').innerText = match ? match.total_prize : '???';
+        document.getElementById('join-page-fee').innerText = fee;
+        document.getElementById('join-page-type').innerText = type;
+
+        let slots = 1;
+        if(type && type.toLowerCase().includes('duo')) slots = 2;
+        if(type && type.toLowerCase().includes('squad')) slots = 4;
+        
+        const ic = document.getElementById('join-inputs-container');
+        ic.innerHTML = "";
+        for(let i=1; i<=slots; i++) {
+            ic.innerHTML += `<input type="text" class="join-input p-name" placeholder="Player ${i} Game ID">`;
+        }
+        
+        document.querySelector('.join-btn-full').dataset.key = key;
+
+        document.querySelectorAll('.app-section').forEach(e => e.classList.remove('active'));
+        document.body.classList.add('sub-page');
+        document.querySelector('.tab-bar').classList.add('hidden');
+        document.getElementById('join-match-view').classList.add('active');
+    }
+
+    function closeJoinPage() {
+        document.getElementById('join-match-view').classList.remove('active');
+        if(currentActiveCategory) {
+            document.getElementById('matches-view').classList.add('active');
+        } else {
+            document.getElementById('tab-home-view').classList.add('active');
+            document.body.classList.remove('sub-page');
+            document.querySelector('.tab-bar').classList.remove('hidden');
+        }
+    }
+
+    // ===== CONFIRM JOIN =====
+    async function confirmJoin() {
+        if(!currentUser) {
+            Swal.fire('Error', 'Please login first', 'error');
+            return;
+        }
+        
+        if(userJoinedMatches.includes(currentJoinId)) {
+            return Swal.fire({ icon:'warning', title:'Already Joined', text:'You have already joined this match!' });
+        }
+        
+        if(allParticipants[currentJoinId]) {
+            const existing = Object.values(allParticipants[currentJoinId]).find(p => p.joinedBy === currentUser.uid);
+            if(existing) {
+                return Swal.fire({ icon:'warning', title:'Already Joined', text:'You are already in this match list!' });
+            }
+        }
+
+        const inps = document.querySelectorAll('.p-name');
+        let count = 0;
+        let names = [];
+        inps.forEach(i => { 
+            if(i.value && i.value.trim()) { 
+                count++; 
+                names.push(i.value.trim()); 
+            } 
+        });
+        if(count !== inps.length) return Swal.fire('Error', "Please fill all player names", 'error');
+        
+        const total = currentEntryFee * count;
+        if((depositBal + winningBal) < total) return Swal.fire('Error', "Insufficient Balance", 'error');
+        
+        const key = document.querySelector('.join-btn-full').dataset.key;
+        let d = depositBal, w = winningBal;
+        let rem = total;
+        if(d >= rem) { d -= rem; rem = 0; }
+        else { rem -= d; d = 0; w -= rem; }
+        
+        toggleLoader(true);
+        try {
+            await update(ref(db, 'users/'+currentUser.uid), {deposit:d, winning:w});
+            
+            for(let n of names) {
+                await push(ref(db, 'match_participants/'+currentJoinId), {
+                    ign: n,
+                    joinedBy: currentUser.uid,
+                    kills: 0,
+                    win: 0
+                });
+            }
+            
+            const mRef = ref(db, 'matches/'+key);
+            const snap = await get(mRef);
+            const cur = (snap.val() && snap.val().joined) ? snap.val().joined : 0;
+            await update(mRef, {joined: cur + count});
+            
+            const tid = push(ref(db, 'transactions/'+currentUser.uid)).key;
+            await set(ref(db, 'transactions/'+currentUser.uid+'/'+tid), {
+                type: 'Match Join',
+                amount: total,
+                method: 'Wallet',
+                status: 'Success',
+                date: new Date().toLocaleString()
+            });
+            
+            if(!userJoinedMatches.includes(currentJoinId)) {
+                userJoinedMatches.push(currentJoinId);
+            }
+            filterMatchTab(currentMatchFilter);
+            
+            toggleLoader(false);
+            Swal.fire({
+                icon: 'success',
+                title: 'Joined!',
+                text: 'You have successfully joined the match.'
+            }).then(() => {
+                closeJoinPage();
+            });
+            
+        } catch(e) {
+            toggleLoader(false);
+            Swal.fire('Error', e.message, 'error');
+        }
+    }
+
+    // ===== CHECK ROOM =====
+    function checkRoom(key) {
+        if(!currentUser) return;
+        const m = rawMatches.find(x => x.dbKey === key);
+        if(!m) return;
+
+        if(userJoinedMatches.includes(key)) {
+            const rId = m.room_id || '';
+            const rPass = m.room_pass || '';
+
+            if(!rId || rId === 'undefined' || rId.length < 2) {
+                Swal.fire({
+                    icon: 'info',
+                    title: '⏳ Wait',
+                    text: 'Room details will be available 10 minutes before match start.',
+                    confirmButtonText: 'Okay'
+                });
+            } else {
+                document.getElementById('popup-room-id').innerText = rId;
+                document.getElementById('popup-room-pass').innerText = rPass;
+                document.getElementById('room-modal').classList.add('active');
+            }
+        } else {
+            document.getElementById('join-warning-modal').classList.add('active');
+        }
+    }
+
+    // ===== PRIZE POOL =====
+    function openPrizePool(key) {
+        const m = rawMatches.find(x => x.dbKey === key);
+        if(!m) return;
+        document.getElementById('prize-modal-subtitle').innerText = m.title;
+        const c = document.getElementById('prize-list-content');
+        if(m.prize_desc) {
+            c.innerHTML = `<div style="text-align:left; font-size:14px; color:#333; line-height:1.6;">${m.prize_desc.replace(/\n/g, '<br>')}</div>`;
+        } else {
+            const total = m.total_prize;
+            const w = Math.floor(total * 0.4);
+            const s = Math.floor(total * 0.2);
+            const t = Math.floor(total * 0.1);
+            c.innerHTML = `
+                <div class="prize-row"><span class="prize-icon">👑</span> Winner - ${w} Taka</div>
+                <div class="prize-row"><span class="prize-icon">🥈</span> 2nd Position - ${s} Taka</div>
+                <div class="prize-row"><span class="prize-icon">🥉</span> 3rd Position - ${t} Taka</div>
+                <div class="prize-row"><span class="prize-icon">🏅</span> 4th Position - 20 Taka</div>
+                <div class="prize-row"><span class="prize-icon">🏅</span> 5th Position - 10 Taka</div>
+                <div class="prize-row"><span class="prize-icon">🔥</span> Per Kill: ${m.per_kill} Taka</div>
+                <div class="prize-row"><span class="prize-icon">🏆</span> Total Prize Pool: ${total} Taka</div>
+            `;
+        }
+        document.getElementById('prize-modal').classList.add('active');
+    }
+
+    // ===== WITHDRAW =====
+    function selectWithdrawMethod(el, method) {
+        document.querySelectorAll('.method-card').forEach(e => e.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('withdraw-method').value = method;
+    }
+
+    async function submitWithdraw() {
+        if(!currentUser) {
+            Swal.fire('Error', 'Please login first', 'error');
+            return;
+        }
+        
+        const amount = parseFloat(document.getElementById('withdraw-amount').value);
+        const number = document.getElementById('withdraw-number').value;
+        const method = document.getElementById('withdraw-method').value;
+        
+        if(!amount || !number) {
+            Swal.fire('Error', 'Please fill all fields', 'error');
+            return;
+        }
+        if(amount < 100) {
+            Swal.fire('Error', 'Minimum withdraw amount is 100 TK', 'error');
+            return;
+        }
+        if(amount > winningBal) {
+            Swal.fire('Error', 'Insufficient winning balance', 'error');
+            return;
+        }
+        
+        Swal.fire({
+            title: 'Confirm Withdraw',
+            text: `Withdraw ${amount} TK to ${method} (${number})?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#00c853',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Withdraw'
+        }).then(async (result) => {
+            if(result.isConfirmed) {
+                toggleLoader(true);
+                try {
+                    const requestId = push(ref(db, 'withdraw_requests')).key;
+                    const newWinningBal = winningBal - amount;
+                    await update(ref(db, 'users/'+currentUser.uid), { winning: newWinningBal });
+                    
+                    await set(ref(db, 'withdraw_requests/'+requestId), {
+                        userId: currentUser.uid,
+                        userName: currentUser.displayName || 'Unknown',
+                        userEmail: currentUser.email,
+                        amount: amount,
+                        method: method,
+                        mobileNumber: number,
+                        status: 'pending',
+                        timestamp: new Date().toLocaleString(),
+                        requestedAt: serverTimestamp()
+                    });
+                    
+                    const txId = push(ref(db, 'transactions/'+currentUser.uid)).key;
+                    await set(ref(db, 'transactions/'+currentUser.uid+'/'+txId), {
+                        type: 'Withdraw Request',
+                        amount: amount,
+                        method: method,
+                        number: number,
+                        status: 'Pending',
+                        date: new Date().toLocaleString(),
+                        requestId: requestId
+                    });
+                    
+                    document.getElementById('withdraw-amount').value = '';
+                    document.getElementById('withdraw-number').value = '';
+                    
+                    toggleLoader(false);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Withdraw Request Sent!',
+                        text: `Request of ${amount} TK submitted. Admin will process it soon.`,
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        window.navigateSub('wallet');
+                    });
+                    
+                } catch(error) {
+                    toggleLoader(false);
+                    Swal.fire('Error', error.message, 'error');
+                }
+            }
+        });
+    }
+
+    // ===== ADD MONEY =====
+    function switchPayTab(t) {
+        currentPayMethod = t;
+        document.querySelectorAll('.am-card').forEach(e => e.classList.remove('active'));
+        document.getElementById(`tab-${t}`).classList.add('active');
+        document.querySelectorAll('.am-box').forEach(e => e.style.display = 'none');
+        document.getElementById(`content-${t}`).style.display = 'block';
+        const btn = document.querySelector('.am-verify-btn');
+        if(t === 'bkash') btn.style.background = '#E2136E';
+        if(t === 'rocket') btn.style.background = '#8C3494';
+        if(t === 'nagad') btn.style.background = '#F7941D';
+    }
+
+    function triggerVerify() { verifyAutoPay(currentPayMethod); }
+
+    async function verifyAutoPay(method) {
+        if(!currentUser) {
+            Swal.fire('Error', 'Please login first', 'error');
+            return;
+        }
+        const trxId = document.getElementById(`trx-${method}`).value.trim();
+        if(!trxId) return Swal.fire({ icon:'warning', title:'Oops!', text:'Please enter Transaction ID' });
+        
+        const usedSnap = await get(ref(db, `Auto Pay/${trxId}`));
+        if(usedSnap.exists()) return Swal.fire({ icon:'error', title:'Failed', text:'This TrxID has already been used!' });
+        
+        const apiSnap = await get(ref(db, 'XNXANIKPAY'));
+        let found = null;
+        if(apiSnap.exists()) {
+            Object.values(apiSnap.val()).forEach(p => {
+                if(p.txid && p.txid.toLowerCase() === trxId.toLowerCase()) found = p;
+            });
+        }
+        
+        if(found) {
+            const amount = parseFloat(found.amount);
+            await update(ref(db, 'users/'+currentUser.uid), { deposit: depositBal + amount });
+            await set(ref(db, `Auto Pay/${trxId}`), {
+                amount: amount,
+                usedBy: currentUser.uid,
+                time: serverTimestamp()
+            });
+            const txKey = push(ref(db, 'transactions/'+currentUser.uid)).key;
+            await set(ref(db, 'transactions/'+currentUser.uid+'/'+txKey), {
+                type: 'Deposit (Auto)',
+                amount: amount,
+                method: method,
+                status: 'Success',
+                txID: trxId,
+                date: new Date().toLocaleString()
+            });
+            Swal.fire({ icon:'success', title:'Success!', text:`Added ${amount} TK!` }).then(() => {
+                document.getElementById(`trx-${method}`).value = "";
+                window.navigateSub('wallet');
+            });
+        } else {
+            Swal.fire({ icon:'error', title:'Invalid', text:'Invalid Transaction ID.' });
+        }
+    }
+
+    // ===== HISTORY =====
+    function loadHistory() {
+        const l = document.getElementById('history-list');
+        if(!l) return;
+        l.innerHTML = "<div style='padding:20px; text-align:center; color:#999;'>Loading...</div>";
+        if(!currentUser) return;
+        
+        onValue(ref(db, 'transactions/'+currentUser.uid), s => {
+            l.innerHTML = "";
+            const d = s.val();
+            if(d) {
+                Object.values(d).reverse().forEach(t => {
+                    const isDeposit = t.type && t.type.includes('Deposit');
+                    const isWin = t.type && t.type.includes('Win');
+                    const borderColor = isDeposit ? '#43A047' : (isWin ? '#FFB300' : '#D32F2F');
+                    const icon = isDeposit ? '💰' : (isWin ? '🏆' : '💸');
+                    
+                    l.innerHTML += `
+                    <div class="history-card" style="border-left-color: ${borderColor};">
+                        <div class="hc-left">
+                            <div class="hc-title">${icon} ${t.type || 'Transaction'}</div>
+                            <div class="hc-date">${t.date || ''}</div>
+                            <div class="hc-amount">${t.amount ? '৳'+t.amount : ''}</div>
+                            ${t.uid ? `<div class="hc-amount" style="font-size:10px;color:#999;">UID: ${t.uid}</div>` : ''}
+                        </div>
+                        <div class="hc-right">
+                            <div class="hc-tag">${t.status || 'Success'}</div>
+                        </div>
+                    </div>`;
+                });
+            } else {
+                l.innerHTML = "<div class='empty-msg'>No Transactions</div>";
+            }
+        });
+    }
+
+    // ===== NOTIFICATIONS =====
+    function loadNotifs() {
+        const l = document.getElementById('notif-list-container');
+        if(!l) return;
+        onValue(ref(db, 'notifications'), s => {
+            l.innerHTML = "";
+            const d = s.val();
+            if(d) {
+                Object.values(d).reverse().forEach(n => {
+                    l.innerHTML += `
+                    <div style="padding:15px; border-bottom:1px solid #eee; background:white; margin:5px 15px; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+                        <div style="font-weight:800; color:#333;">${n.title}</div>
+                        <div style="font-size:13px; color:#555; margin-top:5px;">${n.body}</div>
+                        <div style="font-size:11px; color:#999; margin-top:5px;">${n.time || ''}</div>
+                    </div>`;
+                });
+            } else {
+                l.innerHTML = "<div class='empty-msg'>No notifications</div>";
+            }
+        });
+    }
+
+    // ===== SAVE PROFILE =====
+    async function saveProfile() {
+        const n = document.getElementById('ep-username').value;
+        const curP = document.getElementById('ep-pass-cur').value;
+        const newP = document.getElementById('ep-pass-new').value;
+        const conP = document.getElementById('ep-pass-con').value;
+        
+        if(!currentUser) return Swal.fire('Error', 'Please login first', 'error');
+        
+        const promises = [];
+        toggleLoader(true);
+
+        if(n && n !== currentUser.displayName) {
+            promises.push(updateProfile(currentUser, {displayName: n}).then(() => {
+                update(ref(db, 'users/'+currentUser.uid), {username: n});
+            }));
+        }
+        
+        if(newP) {
+            if(newP !== conP) {
+                toggleLoader(false);
+                return Swal.fire('Error', "New passwords do not match", 'error');
+            }
+            if(!curP) {
+                toggleLoader(false);
+                return Swal.fire('Error', "Current password required", 'error');
+            }
+            const cred = EmailAuthProvider.credential(currentUser.email, curP);
+            promises.push(
+                reauthenticateWithCredential(currentUser, cred)
+                .then(() => updatePassword(currentUser, newP))
+            );
+        }
+
+        try {
+            await Promise.all(promises);
+            toggleLoader(false);
+            Swal.fire('Success', "Profile Updated", 'success');
+            document.getElementById('ep-pass-cur').value = '';
+            document.getElementById('ep-pass-new').value = '';
+            document.getElementById('ep-pass-con').value = '';
+        } catch(e) {
+            toggleLoader(false);
+            Swal.fire('Error', e.message, 'error');
+        }
+    }
+
+    // ===== UTILITY =====
+    function copyToClipboard(id) {
+        const text = document.getElementById(id).innerText;
+        navigator.clipboard.writeText(text);
+        Swal.fire({ icon:'success', title:'Copied!', text:'Copied to clipboard', timer:1500, showConfirmButton:false });
+    }
+
+    function openVideo(type) {
+        let url = "";
+        if(type === 'addMoney') url = videoLinks.addMoney;
+        if(type === 'getRoom') url = videoLinks.getRoom;
+        if(type === 'howPlay') url = videoLinks.howPlay;
+        if(url) window.open(url, '_blank');
+    }
+
+    function openSupport() {
+        if(supportLink) window.open(supportLink, '_blank');
+    }
+
+    function openShopLink() {
+        if(shopLink) window.open(shopLink, '_blank');
+    }
+
+</script>
 </body>
 </html>
